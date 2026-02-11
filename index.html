@@ -2,280 +2,154 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五年级下册 · 词语闯关挑战</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>五年级下册 · 词语闯关 (iOS修复版)</title>
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         :root {
-            /* 配色升级：更有活力 */
             --primary: #f97316; 
             --primary-dark: #c2410c;
-            --accent: #3b82f6; /* 蓝色点缀，代表智慧 */
             --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #fff1f2 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
             --text: #431407;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
             background: var(--bg-gradient);
             color: var(--text);
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center; /* 垂直居中 */
-            padding: 20px;
+            align-items: center; 
+            padding: 15px;
         }
 
         .container {
             background: var(--card-bg);
             border-radius: 24px;
-            box-shadow: 0 15px 40px rgba(234, 88, 12, 0.15);
+            box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
             width: 100%;
-            max-width: 700px;
-            padding: 30px;
+            max-width: 600px; /* 手机端稍微窄一点 */
+            padding: 25px 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             border: 1px solid rgba(255,255,255,0.6);
             backdrop-filter: blur(10px);
             position: relative;
-            overflow: hidden;
         }
 
-        /* 顶部装饰 */
+        header { text-align: center; margin-bottom: 5px; }
         .header-badge {
-            background: #ffedd5;
-            color: var(--primary-dark);
-            font-size: 0.9rem;
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            border: 1px solid #fdba74;
+            background: #ffedd5; color: var(--primary-dark); font-size: 0.85rem;
+            padding: 4px 12px; border-radius: 20px; display: inline-block;
+            margin-bottom: 8px; font-weight: bold; border: 1px solid #fdba74;
         }
-
-        header { text-align: center; margin-bottom: 5px; position: relative; z-index: 2;}
         h1 { 
-            color: var(--primary); 
-            font-size: 2rem; 
-            margin-bottom: 5px; 
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0px rgba(254, 215, 170, 0.5);
+            color: var(--primary); font-size: 1.6rem; margin: 0; 
+            text-shadow: 1px 1px 0px rgba(254, 215, 170, 0.5);
         }
 
-        /* 激励金句区域 */
         .motivation-box {
-            background: linear-gradient(to right, #fff7ed, #ecfccb);
-            border-left: 5px solid #84cc16;
-            padding: 15px;
+            background: linear-gradient(to right, #fff7ed, #f7fee7);
+            border-left: 4px solid #84cc16;
+            padding: 12px;
             border-radius: 8px;
             color: #3f6212;
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-align: center;
-            margin-bottom: 15px;
             font-weight: bold;
-            min-height: 54px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.5s;
+            min-height: 48px;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .setup-panel {
-            border: 2px dashed #fdba74;
-            border-radius: 16px;
-            padding: 25px;
-            background: #fff;
-            transition: all 0.3s;
-        }
-
-        .lesson-selector-area {
-            background: #fff7ed;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            border: 2px dashed #fdba74; border-radius: 16px; padding: 20px;
+            background: #fff; transition: all 0.3s;
         }
 
         .lesson-select {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.1rem;
-            border: 2px solid var(--primary);
-            border-radius: 10px;
-            color: var(--primary-dark);
-            background: white;
-            cursor: pointer;
-            font-weight: bold;
-            outline: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%; padding: 12px; font-size: 1.05rem;
+            border: 2px solid var(--primary); border-radius: 10px;
+            background: white; font-weight: bold; outline: none;
+            color: #c2410c; margin-bottom: 5px;
         }
 
         .settings-row {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            display: flex; gap: 8px; justify-content: space-between; margin: 15px 0;
         }
         .setting-group { 
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
+            flex: 1; text-align: center; background: #f8fafc;
+            padding: 8px 5px; border-radius: 8px; border: 1px solid #e2e8f0;
         }
-        .setting-group label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;}
+        .setting-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 3px;}
         select { 
-            width: 100%; 
-            padding: 5px; 
-            border-radius: 5px; 
-            border: 1px solid #cbd5e1; 
-            background: white; 
-            font-weight: bold; 
-            color: #334155;
-            text-align: center;
+            width: 100%; border: none; background: transparent; 
+            font-weight: bold; color: #334155; text-align: center; font-size: 0.95rem;
         }
 
         .main-btn {
             background: linear-gradient(to bottom right, #f97316, #ea580c);
-            color: white;
-            border: none;
-            padding: 18px 30px;
-            border-radius: 50px;
-            font-size: 1.4rem;
-            font-weight: 800;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            color: white; border: none; padding: 16px; border-radius: 50px;
+            font-size: 1.3rem; font-weight: 800; width: 100%;
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .main-btn:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(234, 88, 12, 0.3); }
+        .main-btn:active { transform: scale(0.98); }
 
-        /* Running Mode UI */
+        /* Running UI */
         .running-ui { display: none; text-align: center; padding: 10px 0; }
-        
         .level-badge {
-            background: #3b82f6;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: inline-block;
+            background: #3b82f6; color: white; padding: 4px 10px;
+            border-radius: 12px; font-size: 0.8rem; font-weight: bold;
+            display: inline-block; margin-bottom: 10px;
         }
 
         .big-word-display {
-            font-size: 4rem;
-            font-weight: 800;
-            color: var(--text);
-            margin: 20px 0;
-            min-height: 90px;
-            font-family: "KaiTi", "楷体", serif;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 3.5rem; font-weight: 800; color: var(--text);
+            margin: 15px 0; min-height: 80px; font-family: "KaiTi", "楷体", serif;
         }
 
-        /* 能量条样式 */
         .progress-container {
-            position: relative;
-            height: 16px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px 0;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            height: 12px; background: #e2e8f0; border-radius: 10px;
+            overflow: hidden; margin: 15px 0;
         }
         .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #facc15, #f97316);
-            width: 0%;
-            transition: width 0.5s ease-out;
-            border-radius: 10px;
-        }
-        .progress-text {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-weight: bold;
-            margin-top: 5px;
+            height: 100%; background: linear-gradient(90deg, #facc15, #f97316);
+            width: 0%; transition: width 0.3s ease-out;
         }
 
-        .control-btns { display: flex; justify-content: center; gap: 20px; margin-top: 30px;}
+        .control-btns { display: flex; justify-content: center; gap: 15px; margin-top: 25px;}
         .control-btn {
-            padding: 12px 30px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 10px 20px; border-radius: 10px; border: none;
+            font-weight: bold; font-size: 0.95rem;
         }
-        .btn-pause { background: #fffbeb; color: #b45309; border: 2px solid #fcd34d; }
-        .btn-stop { background: #fef2f2; color: #b91c1c; border: 2px solid #fecaca; }
+        .btn-pause { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+        .btn-stop { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
         .answer-list {
-            margin-top: 30px;
-            text-align: left;
-            background: #fff7ed;
-            padding: 20px;
-            border-radius: 12px;
-            display: none;
-            border: 2px solid #ffedd5;
+            margin-top: 20px; text-align: left; background: #fff7ed;
+            padding: 15px; border-radius: 12px; display: none; border: 2px solid #ffedd5;
         }
         .answer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 12px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;
         }
         .answer-item {
-            background: white;
-            padding: 12px 5px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #c2410c;
-            border-bottom: 3px solid #fdba74; /* 更有立体感 */
-        }
-        
-        .expand-toggle {
-            text-align: center;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 0.8rem;
-            margin-top: 15px;
-        }
-        #customInputArea { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;}
-        textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;}
-
-        /* 动画定义 */
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
+            background: white; padding: 10px 2px; border-radius: 8px;
+            text-align: center; font-size: 1rem; font-weight: bold;
+            color: #c2410c; border-bottom: 2px solid #fdba74;
         }
 
-        .success-modal {
-            text-align: center;
-            padding: 20px;
-            animation: popIn 0.6s;
-        }
-        .star-icon { font-size: 3rem; margin: 0 5px; animation: float 2s infinite ease-in-out; display: inline-block;}
+        /* 隐藏掉一些复杂功能让界面在手机更清爽，点击可展开 */
+        .expand-toggle { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 15px; padding: 10px;}
+        #customInputArea { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;}
+        textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; }
+
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .ios-tip { font-size: 0.75rem; color: #ef4444; background: #fee2e2; padding: 8px; border-radius: 8px; margin-bottom: 10px; text-align: left; display: none;}
     </style>
 </head>
 <body>
@@ -285,29 +159,30 @@
         <div class="header-badge">⭐ 语文期末大闯关 ⭐</div>
         <h1>五年级下 · 词语挑战</h1>
     </header>
+    
+    <div id="iosTip" class="ios-tip">
+        📱 <b>iPhone用户请注意：</b><br>
+        1. 请确保<b>取消静音模式</b>（拨开手机侧边静音键）。<br>
+        2. 请调大<b>媒体音量</b>。
+    </div>
 
     <div class="motivation-box" id="motivationBox">
-        准备好了吗？每一个词语都是进步的阶梯！
+        准备好了吗？积少成多，进步可见！
     </div>
 
     <div id="setupArea" class="setup-panel">
-        
-        <div class="lesson-selector-area">
-            <label style="display:block; margin-bottom:8px; font-weight:bold; color:#c2410c;">🗺️ 选择挑战关卡：</label>
-            <select id="lessonSelect" class="lesson-select" onchange="previewWords()">
-                </select>
-            <div id="wordPreview" style="font-size:0.85rem; color:#999; margin-top:8px; height:40px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            </div>
-        </div>
+        <label style="display:block; margin-bottom:5px; font-weight:bold; color:#c2410c; font-size:0.9rem;">🗺️ 选择挑战关卡：</label>
+        <select id="lessonSelect" class="lesson-select" onchange="previewWords()"></select>
+        <div id="wordPreview" style="font-size:0.8rem; color:#999; margin-bottom:15px; height:20px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
 
         <div class="settings-row">
             <div class="setting-group">
                 <label>🗣️ 语速</label>
                 <select id="speechRate">
                     <option value="1">正常</option>
-                    <option value="0.85">稍慢</option>
-                    <option value="0.7" selected>较慢</option>
-                    <option value="0.55">很慢</option>
+                    <option value="0.8">稍慢</option>
+                    <option value="0.6" selected>较慢</option>
+                    <option value="0.5">很慢</option>
                 </select>
             </div>
             <div class="setting-group">
@@ -332,10 +207,10 @@
             <span>🚀 开启挑战</span>
         </button>
 
-        <div class="expand-toggle" onclick="toggleCustomArea()">高级功能：自定义粘贴 / PDF识别</div>
+        <div class="expand-toggle" onclick="toggleCustomArea()">+ 自定义 / PDF识别</div>
         <div id="customInputArea">
-             <textarea id="customWordInput" placeholder="在此粘贴你想听写的词语..."></textarea>
-             <input type="file" accept="application/pdf" onchange="handlePdfUpload(event)" style="margin-top:8px;">
+             <textarea id="customWordInput" placeholder="在此粘贴词语..."></textarea>
+             <input type="file" accept="application/pdf" onchange="handlePdfUpload(event)" style="margin-top:8px; width:100%">
              <div id="ocrStatus" style="font-size:0.8rem; color:green; margin-top:5px;"></div>
         </div>
     </div>
@@ -346,14 +221,14 @@
         <div class="progress-container">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="progress-text" id="progressText">进度: 0 / 0</div>
+        <div class="progress-text" id="progressText" style="font-size:0.8rem; color:#888;">0 / 0</div>
 
         <div class="big-word-display" id="wordDisplay">Ready</div>
         <div style="color: #64748b; font-size: 0.9rem;" id="statusMsg">点击开始</div>
 
         <div class="control-btns">
-            <button class="control-btn btn-pause" id="pauseBtn" onclick="togglePause()">暂停休息</button>
-            <button class="control-btn btn-stop" onclick="stopDictation()">结束挑战</button>
+            <button class="control-btn btn-pause" id="pauseBtn" onclick="togglePause()">暂停</button>
+            <button class="control-btn btn-stop" onclick="stopDictation()">结束</button>
         </div>
 
         <div class="answer-list" id="answerList"></div>
@@ -361,55 +236,24 @@
 </div>
 
 <script>
-    // --- 1. 核心数据 ---
+    // --- 数据区 ---
     const lessonGroups = [
-        {
-            name: "第1-2课：古诗与园子",
-            words: ["白昼", "昼夜", "耕耘", "耘田", "桑树", "桑叶", "拂晓", "家喻户晓", "蝴蝶", "蝴蝶结", "飞蝶", "粉蝶", "嗡嗡响", "嗡动", "樱花", "樱桃", "榆树", "榆钱", "挺拔", "拔河", "瞎说", "瞎闹", "铲除", "铁铲", "锄草", "锄头", "收割", "分割", "尾巴", "结尾", "承认", "继承", "拴住", "拴马", "水瓢", "瓢泼大雨", "闲逛", "逛街", "蜻蜓", "蚂蚱", "圆滚滚", "明晃晃", "随意"]
-        },
-        {
-            name: "第5课：草船借箭",
-            words: ["妒忌", "嫉妒", "忌讳", "顾忌", "曹操", "监督", "都督", "委托", "委婉", "鲁国", "粗鲁", "遮挡", "遮掩", "迟疑", "疑问", "困惑", "诱惑", "山寨", "水寨", "擂鼓", "擂台", "呐喊", "唢呐", "插嘴", "插秧", "照办", "预计", "紧急", "军令状", "探听", "私自", "布置", "调度", "神机妙算"]
-        },
-        {
-            name: "第6-9课：景阳冈与古诗",
-            words: ["山冈", "井冈山", "饥饿", "饥荒", "碟子", "飞碟", "公斤", "斤斤计较", "俺们", "榜样", "榜文", "拐杖", "手杖", "申请", "重申", "兼职", "软硬兼施", "切勿", "请勿", "拖延", "拖拉", "熟悉", "获悉", "下坠", "坠落", "胸膛", "枪膛", "截断", "截止", "半夜三更", "寻思", "耻笑", "武艺", "篱笆", "樊篱", "仍然", "仍旧", "五岳", "岳飞", "摩擦", "按摩", "遗憾", "遗留", "传递", "快递", "巫婆", "巫术"]
-        },
-        {
-            name: "第10课：青山处处埋忠骨",
-            words: ["彭德怀", "拟定", "模拟", "计谋", "参谋", "瑞雪", "祥瑞", "损失", "损耗", "锻炼", "锻造", "磨炼", "提炼", "眷恋", "家眷", "奔赴", "赴约", "搞好", "搞定", "特殊", "殊荣", "尊重", "尊严", "签名", "签订", "革命", "改革", "情不自禁", "慰问", "繁忙", "下意识"]
-        },
-        {
-            name: "第11课：军神",
-            words: ["庆祝", "国庆", "诊断", "门诊", "肥沃", "沃土", "年龄", "工龄", "土匪", "匪徒", "绷带", "紧绷", "审查", "审视", "药剂", "调味剂", "施工", "施展", "吭声", "引吭高歌", "崭新", "崭露头角", "由衷", "苦衷", "慈祥", "仁慈", "吉祥", "安详", "诊所", "熟练", "一针见血", "施行", "清醒", "颤抖", "一声不吭", "苍白", "肃然起敬", "荣幸"]
-        },
-        {
-            name: "第13课：人物描写一组",
-            words: ["摔跤", "跌跤", "搂抱", "搂住", "打仗", "依仗", "鞭策", "鞭炮", "欺负", "欺骗", "阻挠", "挠头", "扳手", "扳动", "手腕", "腕力", "剃头", "剃须", "腮帮", "两腮", "伤疤", "结疤", "监视", "监狱", "侄子", "侄女", "喉咙", "喉舌", "手疾眼快", "脚腕子", "挺脱", "肢体", "格局", "威严"]
-        },
-        {
-            name: "第14-15课：刷子李与矛盾",
-            words: ["泥浆", "豆浆", "师傅", "太傅", "包袱", "故障", "屏障", "芝麻", "灵芝", "神圣", "圣人", "犯错", "侵犯", "露馅", "肉馅", "轰炸", "轰动", "难堪", "不堪设想", "诈骗", "兵不厌诈", "傻瓜", "装傻", "捏造", "捏泥人", "发怔", "怔住", "粉刷", "绝活", "派头", "手法", "鼓点", "衔接", "矛盾", "长矛", "后盾", "盾牌", "荣誉", "名誉", "吾辈", "支吾"]
-        },
-        {
-            name: "第16-17课：赛马与跳水",
-            words: ["输赢", "赢家", "拳头", "拳击", "擦拭", "策略", "策划", "推荐", "举荐", "赏识", "脚力", "胸有成竹", "摩拳擦掌", "跃跃欲试", "兴致勃勃", "出谋划策", "引荐", "一艘船", "航空", "航行", "放肆", "肆虐", "帽子", "草帽", "桅杆", "撕破", "撕裂", "逗笑", "逗留", "吓唬", "唬人", "鱼钩", "挂钩", "扭打", "扭伤", "咧嘴", "大大咧咧", "船舱", "机舱", "海鸥", "喵喵叫", "风平浪静", "取乐", "哭笑不得", "眼巴巴", "瞄准", "心惊胆战"]
-        },
-        {
-            name: "第18-19课：威尼斯与牧场",
-            words: ["尼姑", "尼龙", "斯文", "瓦斯", "游艇", "潜水艇", "纵横", "纵身", "船艄", "翘起", "翘首", "垫子", "床垫", "保姆", "祷告", "祈祷", "雇佣", "解雇", "簇拥", "花团锦簇", "哗然", "喧哗", "号码", "码头", "操纵", "手忙脚乱", "沉寂", "停泊", "笼罩", "端庄", "仪态", "远眺", "眺望", "骏马", "英俊", "奔驰", "松弛", "辽阔", "辽远", "绵羊", "绵延", "板凳", "凳子", "吆喝", "铃声", "铃铛", "罐头", "瓦罐", "恢复", "天网恢恢", "踢球", "踢踏", "牺牲", "畜牲", "牲畜", "家畜", "遮掩", "阻挡", "飞驰", "赞许", "沉睡", "灯塔"]
-        },
-        {
-            name: "第21-22课：杨氏与手指",
-            words: ["栋梁", "桥梁", "聪明", "聪慧", "造诣", "苦心孤诣", "家禽", "飞禽", "拇指", "大拇指", "搔痒", "搔头", "发痒", "挠痒痒", "污秽", "秽物", "轧钢", "轧路机", "拧开", "拧干", "螺丝", "海螺", "纽扣", "枢纽", "扣子", "折扣", "礼貌", "相貌", "仓库", "仓促", "渺小", "渺茫", "享受", "分享", "平庸", "庸俗", "憎恨", "爱憎分明", "接触", "养尊处优", "享乐", "附庸", "团结"]
-        }
+        { name: "第1-2课：古诗与园子", words: ["白昼", "昼夜", "耕耘", "耘田", "桑树", "桑叶", "拂晓", "家喻户晓", "蝴蝶", "蝴蝶结", "飞蝶", "粉蝶", "嗡嗡响", "嗡动", "樱花", "樱桃", "榆树", "榆钱", "挺拔", "拔河", "瞎说", "瞎闹", "铲除", "铁铲", "锄草", "锄头", "收割", "分割", "尾巴", "结尾", "承认", "继承", "拴住", "拴马", "水瓢", "瓢泼大雨", "闲逛", "逛街", "蜻蜓", "蚂蚱", "圆滚滚", "明晃晃", "随意"] },
+        { name: "第5课：草船借箭", words: ["妒忌", "嫉妒", "忌讳", "顾忌", "曹操", "监督", "都督", "委托", "委婉", "鲁国", "粗鲁", "遮挡", "遮掩", "迟疑", "疑问", "困惑", "诱惑", "山寨", "水寨", "擂鼓", "擂台", "呐喊", "唢呐", "插嘴", "插秧", "照办", "预计", "紧急", "军令状", "探听", "私自", "布置", "调度", "神机妙算"] },
+        { name: "第6-9课：景阳冈与古诗", words: ["山冈", "井冈山", "饥饿", "饥荒", "碟子", "飞碟", "公斤", "斤斤计较", "俺们", "榜样", "榜文", "拐杖", "手杖", "申请", "重申", "兼职", "软硬兼施", "切勿", "请勿", "拖延", "拖拉", "熟悉", "获悉", "下坠", "坠落", "胸膛", "枪膛", "截断", "截止", "半夜三更", "寻思", "耻笑", "武艺", "篱笆", "樊篱", "仍然", "仍旧", "五岳", "岳飞", "摩擦", "按摩", "遗憾", "遗留", "传递", "快递", "巫婆", "巫术"] },
+        { name: "第10课：青山处处埋忠骨", words: ["彭德怀", "拟定", "模拟", "计谋", "参谋", "瑞雪", "祥瑞", "损失", "损耗", "锻炼", "锻造", "磨炼", "提炼", "眷恋", "家眷", "奔赴", "赴约", "搞好", "搞定", "特殊", "殊荣", "尊重", "尊严", "签名", "签订", "革命", "改革", "情不自禁", "慰问", "繁忙", "下意识"] },
+        { name: "第11课：军神", words: ["庆祝", "国庆", "诊断", "门诊", "肥沃", "沃土", "年龄", "工龄", "土匪", "匪徒", "绷带", "紧绷", "审查", "审视", "药剂", "调味剂", "施工", "施展", "吭声", "引吭高歌", "崭新", "崭露头角", "由衷", "苦衷", "慈祥", "仁慈", "吉祥", "安详", "诊所", "熟练", "一针见血", "施行", "清醒", "颤抖", "一声不吭", "苍白", "肃然起敬", "荣幸"] },
+        { name: "第13课：人物描写一组", words: ["摔跤", "跌跤", "搂抱", "搂住", "打仗", "依仗", "鞭策", "鞭炮", "欺负", "欺骗", "阻挠", "挠头", "扳手", "扳动", "手腕", "腕力", "剃头", "剃须", "腮帮", "两腮", "伤疤", "结疤", "监视", "监狱", "侄子", "侄女", "喉咙", "喉舌", "手疾眼快", "脚腕子", "挺脱", "肢体", "格局", "威严"] },
+        { name: "第14-15课：刷子李与矛盾", words: ["泥浆", "豆浆", "师傅", "太傅", "包袱", "故障", "屏障", "芝麻", "灵芝", "神圣", "圣人", "犯错", "侵犯", "露馅", "肉馅", "轰炸", "轰动", "难堪", "不堪设想", "诈骗", "兵不厌诈", "傻瓜", "装傻", "捏造", "捏泥人", "发怔", "怔住", "粉刷", "绝活", "派头", "手法", "鼓点", "衔接", "矛盾", "长矛", "后盾", "盾牌", "荣誉", "名誉", "吾辈", "支吾"] },
+        { name: "第16-17课：赛马与跳水", words: ["输赢", "赢家", "拳头", "拳击", "擦拭", "策略", "策划", "推荐", "举荐", "赏识", "脚力", "胸有成竹", "摩拳擦掌", "跃跃欲试", "兴致勃勃", "出谋划策", "引荐", "一艘船", "航空", "航行", "放肆", "肆虐", "帽子", "草帽", "桅杆", "撕破", "撕裂", "逗笑", "逗留", "吓唬", "唬人", "鱼钩", "挂钩", "扭打", "扭伤", "咧嘴", "大大咧咧", "船舱", "机舱", "海鸥", "喵喵叫", "风平浪静", "取乐", "哭笑不得", "眼巴巴", "瞄准", "心惊胆战"] },
+        { name: "第18-19课：威尼斯与牧场", words: ["尼姑", "尼龙", "斯文", "瓦斯", "游艇", "潜水艇", "纵横", "纵身", "船艄", "翘起", "翘首", "垫子", "床垫", "保姆", "祷告", "祈祷", "雇佣", "解雇", "簇拥", "花团锦簇", "哗然", "喧哗", "号码", "码头", "操纵", "手忙脚乱", "沉寂", "停泊", "笼罩", "端庄", "仪态", "远眺", "眺望", "骏马", "英俊", "奔驰", "松弛", "辽阔", "辽远", "绵羊", "绵延", "板凳", "凳子", "吆喝", "铃声", "铃铛", "罐头", "瓦罐", "恢复", "天网恢恢", "踢球", "踢踏", "牺牲", "畜牲", "牲畜", "家畜", "遮掩", "阻挡", "飞驰", "赞许", "沉睡", "灯塔"] },
+        { name: "第21-22课：杨氏与手指", words: ["栋梁", "桥梁", "聪明", "聪慧", "造诣", "苦心孤诣", "家禽", "飞禽", "拇指", "大拇指", "搔痒", "搔头", "发痒", "挠痒痒", "污秽", "秽物", "轧钢", "轧路机", "拧开", "拧干", "螺丝", "海螺", "纽扣", "枢纽", "扣子", "折扣", "礼貌", "相貌", "仓库", "仓促", "渺小", "渺茫", "享受", "分享", "平庸", "庸俗", "憎恨", "爱憎分明", "接触", "养尊处优", "享乐", "附庸", "团结"] }
     ];
 
-    // --- 激励语录库 ---
     const quotes = {
-        start: ["积少成多，每一个字都是你进步的脚印！", "深呼吸，相信自己，你一定行！", "挑战开始！专注是你最强大的武器。", "今天的努力，是为了明天更棒的自己！"],
-        half: ["太棒了！已经坚持一半了，为你骄傲！", "进度过半！保持这个节奏，你就是最靓的仔！", "加油加油！胜利就在前方！"],
-        end: ["挑战成功！你又掌握了这么多新词！", "太厉害了！坚持下来的感觉真好！", "完美通关！给自己鼓个掌吧！"]
+        start: ["积少成多，每一步都算数！", "深呼吸，相信自己！", "专注是你最强大的武器。", "今天的努力，是为了明天更棒的自己！"],
+        half: ["太棒了！已经过半了！", "坚持住，你就是最靓的仔！", "加油，胜利就在前方！"],
+        end: ["挑战成功！你又进步了！", "完美通关！给自己鼓个掌！"]
     };
 
     // --- 全局变量 ---
@@ -418,15 +262,37 @@
     let isRunning = false;
     let isPaused = false;
     let synth = window.speechSynthesis;
+    
+    // 🔥 iOS 关键修复：定义全局 utterance 变量，防止被垃圾回收
+    let currentUtterance = null;
+    let chineseVoice = null;
+
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     // --- 初始化 ---
     window.onload = function() {
         initLessonSelector();
         updateMotivation(quotes.start[Math.floor(Math.random()*quotes.start.length)]);
+        
+        // 检测 iOS 并显示提示
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            document.getElementById('iosTip').style.display = 'block';
+        }
+
+        // 尝试预加载语音
+        loadVoices();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
     }
 
-    // 动态生成下拉菜单
+    function loadVoices() {
+        const voices = synth.getVoices();
+        // 优先找中文语音，iOS上通常叫 "Ting-Ting" 或者包含 "zh"
+        chineseVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh-HK' || v.name.includes('Ting'));
+    }
+
     function initLessonSelector() {
         const select = document.getElementById('lessonSelect');
         select.innerHTML = '';
@@ -455,24 +321,24 @@
     function updateMotivation(text) {
         const box = document.getElementById('motivationBox');
         box.style.opacity = 0;
-        setTimeout(() => {
-            box.innerText = text;
-            box.style.opacity = 1;
-        }, 300);
+        setTimeout(() => { box.innerText = text; box.style.opacity = 1; }, 300);
     }
 
     // --- 听写逻辑 ---
 
     function initDictation() {
+        // 🔥 iOS 核心修复 1：在用户点击瞬间，必须触发一次 synth.speak
+        // 即使是空字符，也能激活音频引擎
+        synth.cancel();
+        const warmUp = new SpeechSynthesisUtterance('');
+        synth.speak(warmUp);
+
         const customInput = document.getElementById('customWordInput').value.trim();
         let sessionName = "";
 
         if (customInput.length > 0) {
             currentSessionList = processTextToWords(customInput);
-            if(currentSessionList.length === 0) {
-                alert("没有识别到有效的中文词语，请重新输入。");
-                return;
-            }
+            if(currentSessionList.length === 0) { alert("无效的词语输入"); return; }
             sessionName = "自定义挑战";
         } else {
             const index = document.getElementById('lessonSelect').value;
@@ -480,7 +346,6 @@
             sessionName = lessonGroups[index].name;
         }
 
-        // 界面切换
         document.getElementById('setupArea').style.display = 'none';
         document.getElementById('runningArea').style.display = 'block';
         document.getElementById('answerList').style.display = 'none';
@@ -501,16 +366,13 @@
         isRunning = true;
         isPaused = false;
         currentIndex = 0;
-        document.getElementById('pauseBtn').innerText = '暂停休息';
+        document.getElementById('pauseBtn').innerText = '暂停';
         
         const display = document.getElementById('wordDisplay');
         const status = document.getElementById('statusMsg');
         
-        // 随机一句鼓励
-        updateMotivation(quotes.start[Math.floor(Math.random()*quotes.start.length)]);
-
-        // 3秒倒计时
-        status.innerText = "挑战即将开始...";
+        // 倒计时
+        status.innerText = "准备开始...";
         for(let i=3; i>0; i--) {
             display.innerText = i;
             await sleep(1000);
@@ -521,7 +383,6 @@
         while (currentIndex < total && isRunning) {
             updateProgress();
             
-            // 中途鼓励
             if (currentIndex === Math.floor(total / 2)) {
                 updateMotivation(quotes.half[Math.floor(Math.random()*quotes.half.length)]);
             }
@@ -531,26 +392,27 @@
 
             const word = currentSessionList[currentIndex];
             
-            // 重置动画
             display.style.animation = 'none';
-            display.offsetHeight; /* trigger reflow */
+            display.offsetHeight; 
             display.style.animation = 'popIn 0.5s';
             
             display.innerText = `第 ${currentIndex + 1} 个`;
             display.style.color = '#431407';
-            status.innerText = '正在朗读... 请仔细听';
+            status.innerText = '正在朗读...';
 
             const repeat = parseInt(document.getElementById('repeatCount').value);
             for (let r=0; r < repeat; r++) {
                 await checkPause(); 
                 if (!isRunning) break;
-                await speakWord(word);
-                if (r < repeat - 1) await sleep(1500); 
+                
+                await speakWord(word); // 等待朗读完成
+                
+                if (r < repeat - 1) await sleep(1200); 
             }
 
             if (!isRunning) break;
-            status.innerText = '动笔书写...';
-            display.style.color = '#e2e8f0'; // 隐藏当前词
+            status.innerText = '请书写...';
+            display.style.color = '#e2e8f0'; 
             
             const waitTime = parseInt(document.getElementById('waitTime').value) * 10; 
             for(let t=0; t<waitTime; t++) { 
@@ -567,23 +429,55 @@
         }
     }
 
+    // 🔥 iOS 核心修复 2：语音合成 Promise 封装
     function speakWord(text) {
         return new Promise((resolve) => {
+            // 先停止之前的（防止堆叠）
+            synth.cancel();
+
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'zh-CN'; 
+            u.lang = 'zh-CN';
+            
+            // 尝试指定中文语音（iOS必须）
+            if (chineseVoice) {
+                u.voice = chineseVoice;
+            }
+
             const selectedRate = document.getElementById('speechRate').value;
-            u.rate = parseFloat(selectedRate); 
-            u.onend = resolve;
-            u.onerror = (e) => { console.error("Speech error", e); resolve(); };
+            u.rate = parseFloat(selectedRate);
+            
+            // 🔥 关键：将 utterance 赋值给全局变量，防止 iOS 垃圾回收机制过早清理它导致 onend 不触发
+            currentUtterance = u;
+
+            u.onend = () => {
+                currentUtterance = null; // 释放
+                resolve();
+            };
+
+            u.onerror = (e) => {
+                console.error("Speech error", e);
+                currentUtterance = null;
+                // 即使出错也 resolve，防止卡死
+                resolve();
+            };
+
             synth.speak(u);
+
+            // 🔥 iOS 核心修复 3：超时强制跳过
+            // 如果 4 秒都没读完（或者 iOS 没触发 onend），强制继续，防止卡死
+            setTimeout(() => {
+                if (currentUtterance === u) {
+                    console.log("iOS timeout fallback triggered");
+                    resolve();
+                }
+            }, 4000); 
         });
     }
 
     function updateProgress() {
         const total = currentSessionList.length;
-        const current = currentIndex; // Use current index for display during word
-        document.getElementById('progressText').innerText = `已完成: ${current} / ${total}`;
-        const pct = ((current) / total) * 100;
+        document.getElementById('progressText').innerText = `进度: ${currentIndex} / ${total}`;
+        const pct = ((currentIndex) / total) * 100;
         document.getElementById('progressFill').style.width = `${pct}%`;
     }
 
@@ -598,36 +492,35 @@
         const btn = document.getElementById('pauseBtn');
         if (isPaused) {
             synth.cancel(); 
-            btn.innerText = '继续挑战';
+            btn.innerText = '继续';
             btn.style.background = "#dcfce7";
             btn.style.color = "#166534";
-            document.getElementById('statusMsg').innerText = '⏸ 休息一下，喝口水吧';
+            document.getElementById('statusMsg').innerText = '⏸ 已暂停';
         } else {
-            btn.innerText = '暂停休息';
+            btn.innerText = '暂停';
             btn.style.background = "#fffbeb";
             btn.style.color = "#b45309";
         }
     }
 
     function stopDictation() {
-        if(confirm("确定要放弃本次挑战吗？")) {
+        if(confirm("确定要结束吗？")) {
             isRunning = false;
             synth.cancel();
             document.getElementById('runningArea').style.display = 'none';
             document.getElementById('setupArea').style.display = 'block';
-            updateMotivation("没关系，下次准备好了再来！");
+            updateMotivation("没关系，下次继续！");
         }
     }
 
     function finishDictation() {
-        // 结束时的庆祝
         const display = document.getElementById('wordDisplay');
-        display.innerHTML = '<div class="success-modal"><span class="star-icon">🌟</span><br>挑战成功!</div>';
+        display.innerHTML = '<div class="success-modal"><span class="star-icon">🌟</span><br>完成!</div>';
         display.style.fontSize = "2rem";
-        document.getElementById('statusMsg').innerText = "太棒了！快检查一下成果吧！";
+        document.getElementById('statusMsg').innerText = "太棒了！快检查一下！";
         
         document.getElementById('progressFill').style.width = '100%';
-        document.getElementById('progressText').innerText = `已完成: ${currentSessionList.length} / ${currentSessionList.length}`;
+        document.getElementById('progressText').innerText = "100%";
         updateMotivation(quotes.end[Math.floor(Math.random()*quotes.end.length)]);
 
         const list = document.getElementById('answerList');
@@ -639,19 +532,16 @@
         
         list.innerHTML = html;
         list.style.display = 'block';
-        document.getElementById('pauseBtn').style.display = 'none';
-        document.querySelector('.control-btns').style.display = 'none'; // Hide buttons
+        document.querySelector('.control-btns').style.display = 'none';
         
-        setTimeout(() => {
-            list.scrollIntoView({ behavior: 'smooth' });
-        }, 500);
+        setTimeout(() => { list.scrollIntoView({ behavior: 'smooth' }); }, 500);
     }
 
     async function handlePdfUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
         const statusEl = document.getElementById('ocrStatus');
-        statusEl.innerText = '⏳ 正在解析魔法书(PDF)...';
+        statusEl.innerText = '⏳ 正在解析...';
         try {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -662,16 +552,15 @@
                 fullText += textContent.items.map(item => item.str).join(' ');
             }
             document.getElementById('customWordInput').value = fullText;
-            statusEl.innerText = '✅ 解析成功！准备开始挑战吧';
+            statusEl.innerText = '✅ 解析成功';
         } catch (e) {
             console.error(e);
-            statusEl.innerText = '❌ 解析失败，请重试';
+            statusEl.innerText = '❌ 解析失败';
         }
     }
 
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 </script>
-
 </body>
 </html>
