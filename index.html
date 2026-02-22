@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>五年级下册 · 词语闯关 (iOS修复版)</title>
+    <title>五年级下册 · 词语闯关</title>
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         :root {
-            --primary: #f97316; 
-            --primary-dark: #c2410c;
-            --bg-gradient: linear-gradient(135deg, #fff7ed 0%, #fff1f2 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text: #431407;
+            /* 五年级配色：清爽蓝紫调 */
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text: #312e81;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,35 +31,35 @@
         .container {
             background: var(--card-bg);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.18);
             width: 100%;
-            max-width: 600px; /* 手机端稍微窄一点 */
+            max-width: 600px;
             padding: 25px 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            border: 1px solid rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.7);
             backdrop-filter: blur(10px);
             position: relative;
         }
 
         header { text-align: center; margin-bottom: 5px; }
         .header-badge {
-            background: #ffedd5; color: var(--primary-dark); font-size: 0.85rem;
+            background: #e0e7ff; color: var(--primary-dark); font-size: 0.85rem;
             padding: 4px 12px; border-radius: 20px; display: inline-block;
-            margin-bottom: 8px; font-weight: bold; border: 1px solid #fdba74;
+            margin-bottom: 8px; font-weight: bold; border: 1px solid #c7d2fe;
         }
         h1 { 
             color: var(--primary); font-size: 1.6rem; margin: 0; 
-            text-shadow: 1px 1px 0px rgba(254, 215, 170, 0.5);
+            text-shadow: 1px 1px 0px rgba(224, 231, 255, 0.6);
         }
 
         .motivation-box {
-            background: linear-gradient(to right, #fff7ed, #f7fee7);
-            border-left: 4px solid #84cc16;
+            background: linear-gradient(to right, #eef2ff, #f5f3ff);
+            border-left: 4px solid #818cf8;
             padding: 12px;
             border-radius: 8px;
-            color: #3f6212;
+            color: #3730a3;
             font-size: 0.95rem;
             text-align: center;
             font-weight: bold;
@@ -67,7 +68,7 @@
         }
 
         .setup-panel {
-            border: 2px dashed #fdba74; border-radius: 16px; padding: 20px;
+            border: 2px dashed #c7d2fe; border-radius: 16px; padding: 20px;
             background: #fff; transition: all 0.3s;
         }
 
@@ -75,15 +76,27 @@
             width: 100%; padding: 12px; font-size: 1.05rem;
             border: 2px solid var(--primary); border-radius: 10px;
             background: white; font-weight: bold; outline: none;
-            color: #c2410c; margin-bottom: 5px;
+            color: #4338ca; margin-bottom: 5px;
+        }
+
+        .preview-list {
+            display: block;
+            margin-top: 16px;
+            max-height: 220px;
+            overflow-y: auto;
+            text-align: left;
+            background: #eef2ff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #c7d2fe;
         }
 
         .settings-row {
             display: flex; gap: 8px; justify-content: space-between; margin: 15px 0;
         }
         .setting-group { 
-            flex: 1; text-align: center; background: #f8fafc;
-            padding: 8px 5px; border-radius: 8px; border: 1px solid #e2e8f0;
+            flex: 1; text-align: center; background: #eef2ff;
+            padding: 8px 5px; border-radius: 8px; border: 1px solid #e0e7ff;
         }
         .setting-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 3px;}
         select { 
@@ -92,10 +105,10 @@
         }
 
         .main-btn {
-            background: linear-gradient(to bottom right, #f97316, #ea580c);
+            background: linear-gradient(to bottom right, #6366f1, #4f46e5);
             color: white; border: none; padding: 16px; border-radius: 50px;
             font-size: 1.3rem; font-weight: 800; width: 100%;
-            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .main-btn:active { transform: scale(0.98); }
@@ -103,7 +116,7 @@
         /* Running UI */
         .running-ui { display: none; text-align: center; padding: 10px 0; }
         .level-badge {
-            background: #3b82f6; color: white; padding: 4px 10px;
+            background: #6366f1; color: white; padding: 4px 10px;
             border-radius: 12px; font-size: 0.8rem; font-weight: bold;
             display: inline-block; margin-bottom: 10px;
         }
@@ -118,7 +131,7 @@
             overflow: hidden; margin: 15px 0;
         }
         .progress-fill {
-            height: 100%; background: linear-gradient(90deg, #facc15, #f97316);
+            height: 100%; background: linear-gradient(90deg, #818cf8, #6366f1);
             width: 0%; transition: width 0.3s ease-out;
         }
 
@@ -127,23 +140,22 @@
             padding: 10px 20px; border-radius: 10px; border: none;
             font-weight: bold; font-size: 0.95rem;
         }
-        .btn-pause { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+        .btn-pause { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
         .btn-stop { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
         .answer-list {
-            margin-top: 20px; text-align: left; background: #fff7ed;
-            padding: 15px; border-radius: 12px; display: none; border: 2px solid #ffedd5;
+            margin-top: 20px; text-align: left; background: #eef2ff;
+            padding: 15px; border-radius: 12px; display: none; border: 2px solid #c7d2fe;
         }
         .answer-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;
         }
         .answer-item {
             background: white; padding: 10px 2px; border-radius: 8px;
-            text-align: center; font-size: 1rem; font-weight: bold;
-            color: #c2410c; border-bottom: 2px solid #fdba74;
+            text-align: center; font-size: 2rem; font-weight: bold;
+            color: #4338ca; border-bottom: 2px solid #c7d2fe;
         }
 
-        /* 隐藏掉一些复杂功能让界面在手机更清爽，点击可展开 */
         .expand-toggle { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 15px; padding: 10px;}
         #customInputArea { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;}
         textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; }
@@ -156,24 +168,21 @@
 
 <div class="container">
     <header>
-        <div class="header-badge">⭐ 语文期末大闯关 ⭐</div>
-        <h1>五年级下 · 词语挑战</h1>
+        <div class="header-badge">📘 五年级下册 📘</div>
+        <h1>词语大闯关</h1>
     </header>
     
     <div id="iosTip" class="ios-tip">
-        📱 <b>iPhone用户请注意：</b><br>
-        1. 请确保<b>取消静音模式</b>（拨开手机侧边静音键）。<br>
-        2. 请调大<b>媒体音量</b>。
+        📱 <b>iPhone用户提示：</b>请拨开侧边静音键，并调大媒体音量。
     </div>
 
     <div class="motivation-box" id="motivationBox">
-        准备好了吗？积少成多，进步可见！
+        积少成多，每一步都算数！
     </div>
 
     <div id="setupArea" class="setup-panel">
-        <label style="display:block; margin-bottom:5px; font-weight:bold; color:#c2410c; font-size:0.9rem;">🗺️ 选择挑战关卡：</label>
+        <label style="display:block; margin-bottom:5px; font-weight:bold; color:#4338ca; font-size:0.9rem;">📚 选择课文：</label>
         <select id="lessonSelect" class="lesson-select" onchange="previewWords()"></select>
-        <div id="wordPreview" style="font-size:0.8rem; color:#999; margin-bottom:15px; height:20px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
 
         <div class="settings-row">
             <div class="setting-group">
@@ -204,8 +213,10 @@
         </div>
 
         <button class="main-btn" onclick="initDictation()">
-            <span>🚀 开启挑战</span>
+            <span>🚀 开始挑战</span>
         </button>
+
+        <div id="wordPreview" class="preview-list"></div>
 
         <div class="expand-toggle" onclick="toggleCustomArea()">+ 自定义 / PDF识别</div>
         <div id="customInputArea">
@@ -236,7 +247,6 @@
 </div>
 
 <script>
-    // --- 数据区 ---
     const lessonGroups = [
         { name: "第1-2课：古诗与园子", words: ["白昼", "昼夜", "耕耘", "耘田", "桑树", "桑叶", "拂晓", "家喻户晓", "蝴蝶", "蝴蝶结", "飞蝶", "粉蝶", "嗡嗡响", "嗡动", "樱花", "樱桃", "榆树", "榆钱", "挺拔", "拔河", "瞎说", "瞎闹", "铲除", "铁铲", "锄草", "锄头", "收割", "分割", "尾巴", "结尾", "承认", "继承", "拴住", "拴马", "水瓢", "瓢泼大雨", "闲逛", "逛街", "蜻蜓", "蚂蚱", "圆滚滚", "明晃晃", "随意"] },
         { name: "第5课：草船借箭", words: ["妒忌", "嫉妒", "忌讳", "顾忌", "曹操", "监督", "都督", "委托", "委婉", "鲁国", "粗鲁", "遮挡", "遮掩", "迟疑", "疑问", "困惑", "诱惑", "山寨", "水寨", "擂鼓", "擂台", "呐喊", "唢呐", "插嘴", "插秧", "照办", "预计", "紧急", "军令状", "探听", "私自", "布置", "调度", "神机妙算"] },
@@ -289,7 +299,7 @@
 
     function loadVoices() {
         const voices = synth.getVoices();
-        // 优先找中文语音，iOS上通常叫 "Ting-Ting" 或者包含 "zh"
+        // 优先找中文语音
         chineseVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh-HK' || v.name.includes('Ting'));
     }
 
@@ -310,7 +320,13 @@
         const index = document.getElementById('lessonSelect').value;
         const words = lessonGroups[index].words;
         const uniqueWords = [...new Set(words)];
-        document.getElementById('wordPreview').innerText = "预览: " + uniqueWords.join("、");
+        const list = document.getElementById('wordPreview');
+        let html = '<div class="answer-grid">';
+        uniqueWords.forEach((w, i) => {
+            html += `<div class="answer-item"><span style="font-size:0.7em;color:#aaa;display:block">${i+1}</span>${w}</div>`;
+        });
+        html += '</div>';
+        list.innerHTML = html;
     }
 
     function toggleCustomArea() {
@@ -328,7 +344,6 @@
 
     function initDictation() {
         // 🔥 iOS 核心修复 1：在用户点击瞬间，必须触发一次 synth.speak
-        // 即使是空字符，也能激活音频引擎
         synth.cancel();
         const warmUp = new SpeechSynthesisUtterance('');
         synth.speak(warmUp);
@@ -397,7 +412,7 @@
             display.style.animation = 'popIn 0.5s';
             
             display.innerText = `第 ${currentIndex + 1} 个`;
-            display.style.color = '#431407';
+            display.style.color = '#312e81';
             status.innerText = '正在朗读...';
 
             const repeat = parseInt(document.getElementById('repeatCount').value);
@@ -432,13 +447,12 @@
     // 🔥 iOS 核心修复 2：语音合成 Promise 封装
     function speakWord(text) {
         return new Promise((resolve) => {
-            // 先停止之前的（防止堆叠）
+            // 先停止之前的
             synth.cancel();
 
             const u = new SpeechSynthesisUtterance(text);
             u.lang = 'zh-CN';
             
-            // 尝试指定中文语音（iOS必须）
             if (chineseVoice) {
                 u.voice = chineseVoice;
             }
@@ -446,28 +460,26 @@
             const selectedRate = document.getElementById('speechRate').value;
             u.rate = parseFloat(selectedRate);
             
-            // 🔥 关键：将 utterance 赋值给全局变量，防止 iOS 垃圾回收机制过早清理它导致 onend 不触发
+            // 🔥 关键：将 utterance 赋值给全局变量
             currentUtterance = u;
 
             u.onend = () => {
-                currentUtterance = null; // 释放
+                currentUtterance = null; 
                 resolve();
             };
 
             u.onerror = (e) => {
                 console.error("Speech error", e);
                 currentUtterance = null;
-                // 即使出错也 resolve，防止卡死
                 resolve();
             };
 
             synth.speak(u);
 
-            // 🔥 iOS 核心修复 3：超时强制跳过
-            // 如果 4 秒都没读完（或者 iOS 没触发 onend），强制继续，防止卡死
+            // 🔥 iOS 核心修复 3：超时强制跳过 (4秒)
             setTimeout(() => {
                 if (currentUtterance === u) {
-                    console.log("iOS timeout fallback triggered");
+                    console.log("iOS timeout fallback");
                     resolve();
                 }
             }, 4000); 
@@ -493,13 +505,13 @@
         if (isPaused) {
             synth.cancel(); 
             btn.innerText = '继续';
-            btn.style.background = "#dcfce7";
-            btn.style.color = "#166534";
+            btn.style.background = "#e0e7ff";
+            btn.style.color = "#312e81";
             document.getElementById('statusMsg').innerText = '⏸ 已暂停';
         } else {
             btn.innerText = '暂停';
-            btn.style.background = "#fffbeb";
-            btn.style.color = "#b45309";
+            btn.style.background = "#eef2ff";
+            btn.style.color = "#4338ca";
         }
     }
 
@@ -515,7 +527,7 @@
 
     function finishDictation() {
         const display = document.getElementById('wordDisplay');
-        display.innerHTML = '<div class="success-modal"><span class="star-icon">🌟</span><br>完成!</div>';
+        display.innerHTML = '<div style="animation:popIn 0.6s"><span style="font-size:3rem;display:inline-block;animation:float 2s infinite">🌟</span><br>完成!</div>';
         display.style.fontSize = "2rem";
         document.getElementById('statusMsg').innerText = "太棒了！快检查一下！";
         
@@ -524,11 +536,11 @@
         updateMotivation(quotes.end[Math.floor(Math.random()*quotes.end.length)]);
 
         const list = document.getElementById('answerList');
-        let html = '<h3 style="margin-bottom:15px; color:#ea580c; text-align:center;">🏆 答案核对卡</h3><div class="answer-grid">';
+        let html = '<h3 style="margin-bottom:15px; color:#4f46e5; text-align:center;">🏆 答案核对卡</h3><div class="answer-grid">';
         currentSessionList.forEach((w, i) => {
             html += `<div class="answer-item"><span style="font-size:0.7em;color:#aaa;display:block">${i+1}</span>${w}</div>`;
         });
-        html += '</div><div style="text-align:center; margin-top:20px;"><button class="control-btn" onclick="location.reload()" style="background:#f97316;color:white;">再来一局</button></div>';
+        html += '</div><div style="text-align:center; margin-top:20px;"><button class="control-btn" onclick="location.reload()" style="background:#6366f1;color:white;">再来一局</button></div>';
         
         list.innerHTML = html;
         list.style.display = 'block';
