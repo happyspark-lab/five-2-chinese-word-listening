@@ -3,198 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>五年级下册 · 词语闯关</title>
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <title>语文词语闯关</title>
     <style>
         :root {
-            /* 五年级配色：清爽蓝紫调 */
             --primary: #6366f1;
             --primary-dark: #4338ca;
-            --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
-            --card-bg: rgba(255, 255, 255, 0.96);
+            --primary-light: #e0e7ff;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --bg: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf4ff 100%);
+            --card: rgba(255,255,255,0.96);
             --text: #312e81;
+            --sub: #6b7280;
+            --border: rgba(99,102,241,0.15);
+            --shadow: 0 8px 32px rgba(99,102,241,0.15);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text);
+            background: var(--bg);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center; 
-            padding: 15px;
-        }
-
-        .container {
-            background: var(--card-bg);
-            border-radius: 24px;
-            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.18);
-            width: 100%;
-            max-width: 600px;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            border: 1px solid rgba(255,255,255,0.7);
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-
-        header { text-align: center; margin-bottom: 5px; }
-        .header-badge {
-            background: #e0e7ff; color: var(--primary-dark); font-size: 0.85rem;
-            padding: 4px 12px; border-radius: 20px; display: inline-block;
-            margin-bottom: 8px; font-weight: bold; border: 1px solid #c7d2fe;
-        }
-        h1 { 
-            color: var(--primary); font-size: 1.6rem; margin: 0; 
-            text-shadow: 1px 1px 0px rgba(224, 231, 255, 0.6);
-        }
-
-        .motivation-box {
-            background: linear-gradient(to right, #eef2ff, #f5f3ff);
-            border-left: 4px solid #818cf8;
+            color: var(--text);
             padding: 12px;
-            border-radius: 8px;
-            color: #3730a3;
-            font-size: 0.95rem;
-            text-align: center;
-            font-weight: bold;
-            min-height: 48px;
-            display: flex; align-items: center; justify-content: center;
+        }
+        /* ===== SCREENS ===== */
+        .screen { display:none; }
+        .screen.active { display:block; }
+
+        /* ===== COMMON ===== */
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            padding: 22px 18px;
+        }
+        .btn {
+            border: none; border-radius: 50px; font-weight: 800;
+            cursor: pointer; transition: all 0.15s; display: flex;
+            align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            color: white; padding: 14px 24px; font-size: 1.1rem;
+            width: 100%; box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; padding: 14px 24px; font-size: 1.1rem;
+            width: 100%; box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white; padding: 14px 24px; font-size: 1.1rem;
+            width: 100%; box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+        }
+        .btn-sm {
+            padding: 8px 16px; font-size: 0.85rem; border-radius: 20px;
+            font-weight: 700; border: none; cursor: pointer;
+        }
+        input[type="text"] {
+            width: 100%; padding: 14px 16px; border: 2px solid #e0e7ff;
+            border-radius: 12px; font-size: 1rem; outline: none;
+            transition: border-color 0.2s; background: #fafafe;
+        }
+        input:focus { border-color: var(--primary); background: white; }
+        label { display:block; font-weight:700; margin-bottom:6px; color:#4338ca; font-size:0.9rem; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+        }
+        .badge-purple { background: var(--primary-light); color: var(--primary-dark); }
+        .badge-green  { background: var(--success-light); color: #065f46; }
+        .badge-amber  { background: var(--accent-light);  color: #92400e; }
+        .badge-red    { background: var(--danger-light);  color: #991b1b; }
+        select {
+            width: 100%; padding: 10px 12px; border: 2px solid #e0e7ff;
+            border-radius: 10px; font-size: 0.95rem; background: white;
+            font-weight: 700; color: var(--text); outline: none;
+        }
+        select:focus { border-color: var(--primary); }
+        .divider { height:1px; background:#e0e7ff; margin:14px 0; }
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .page-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+        .back-btn {
+            background: var(--primary-light); color: var(--primary-dark);
+            border: none; border-radius: 20px; padding: 6px 14px;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
         }
 
-        .setup-panel {
-            border: 2px dashed #c7d2fe; border-radius: 16px; padding: 20px;
-            background: #fff; transition: all 0.3s;
+        /* ===== SCREEN 1: LOGIN ===== */
+        #screen-login {
+            max-width: 420px; margin: 0 auto;
+            padding-top: 40px;
+        }
+        .login-hero {
+            text-align: center; margin-bottom: 28px;
+        }
+        .login-hero .emoji { font-size: 4rem; margin-bottom: 8px; display:block; }
+        .login-hero h1 { font-size: 1.8rem; color: var(--primary-dark); font-weight:900; }
+        .login-hero p  { color: var(--sub); font-size:0.9rem; margin-top:4px; }
+        .user-list { margin-top: 16px; }
+        .user-list-title { font-size: 0.8rem; color: var(--sub); margin-bottom: 8px; }
+        .user-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; background: var(--primary-light); border-radius: 20px;
+            margin: 4px; cursor: pointer; font-weight:700; color: var(--primary-dark);
+            font-size:0.9rem; border:2px solid transparent; transition:all 0.15s;
+        }
+        .user-chip:active { border-color: var(--primary); transform: scale(0.97); }
+        .ios-tip {
+            background: #fff7ed; border: 1px solid #fed7aa; border-radius:10px;
+            padding: 10px 12px; font-size:0.8rem; color:#9a3412; margin-bottom:12px; display:none;
         }
 
-        .lesson-select {
-            width: 100%; padding: 12px; font-size: 1.05rem;
-            border: 2px solid var(--primary); border-radius: 10px;
-            background: white; font-weight: bold; outline: none;
-            color: #4338ca; margin-bottom: 5px;
+        /* ===== SCREEN 2: HOME ===== */
+        #screen-home { max-width: 480px; margin: 0 auto; }
+        .home-topbar {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 12px; gap: 8px;
         }
-
-        .preview-list {
-            display: block;
-            margin-top: 20px;
-            text-align: left;
-            background: #eef2ff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #c7d2fe;
+        .stat-chip {
+            flex: 1; background: var(--card); border-radius: 14px;
+            padding: 10px 10px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer;
+            border: 1px solid var(--border); transition: all 0.15s;
         }
-
+        .stat-chip:active { transform: scale(0.97); }
+        .stat-chip .num { font-size: 1.4rem; font-weight:900; color: var(--primary-dark); }
+        .stat-chip .lbl { font-size: 0.65rem; color: var(--sub); margin-top:1px; }
+        .stat-streak .num { color: #d97706; }
+        .stat-mastered .num { color: #059669; }
+        .stat-error .num   { color: #dc2626; }
+        .greeting-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--card); border-radius: 14px; padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+        .greeting-name { font-size: 1rem; font-weight:800; color: var(--text); }
+        .greeting-sub  { font-size: 0.75rem; color: var(--sub); margin-top:2px; }
+        .switch-user-btn {
+            background: #f0f0f8; border: none; border-radius:20px;
+            padding: 6px 12px; font-size:0.75rem; font-weight:700; color:var(--sub); cursor:pointer;
+        }
+        .selector-row {
+            display:flex; gap:8px; margin-bottom:10px;
+        }
+        .selector-row select { flex:1; }
         .settings-row {
-            display: flex; gap: 8px; justify-content: space-between; margin: 15px 0;
+            display:flex; gap:8px; margin:12px 0;
         }
-        .setting-group { 
-            flex: 1; text-align: center; background: #eef2ff;
-            padding: 8px 5px; border-radius: 8px; border: 1px solid #e0e7ff;
+        .setting-group {
+            flex:1; background:#f8f7ff; border-radius:10px;
+            padding:8px 6px; border:1px solid var(--border); text-align:center;
         }
-        .setting-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 3px;}
-        select { 
-            width: 100%; border: none; background: transparent; 
-            font-weight: bold; color: #334155; text-align: center; font-size: 0.95rem;
+        .setting-group label { font-size:0.7rem; color:var(--sub); margin-bottom:3px; text-align:center; }
+        .setting-group select { font-size:0.85rem; padding:4px 2px; border:none; background:transparent; }
+
+        /* ===== REVIEW QUICK ENTRY ===== */
+        .review-quick-btn {
+            width: 100%; padding: 15px 20px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+            margin-bottom: 10px;
+            display: none;
+            align-items: center; justify-content: space-between;
+        }
+        .review-quick-btn .rqb-left { display:flex; align-items:center; gap:8px; }
+        .review-quick-btn .rqb-count {
+            background: rgba(255,255,255,0.28); border-radius: 20px;
+            padding: 3px 12px; font-size: 0.9rem; font-weight:700;
         }
 
-        .main-btn {
-            background: linear-gradient(to bottom right, #6366f1, #4f46e5);
-            color: white; border: none; padding: 16px; border-radius: 50px;
-            font-size: 1.3rem; font-weight: 800; width: 100%;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+        .review-alert {
+            background: linear-gradient(135deg,#fef3c7,#fde68a);
+            border:2px solid #f59e0b; border-radius:14px;
+            padding:14px 16px; margin-bottom:12px; display:none;
         }
-        .main-btn:active { transform: scale(0.98); }
+        .review-alert-title { font-weight:800; color:#92400e; font-size:0.95rem; }
+        .review-alert-sub   { font-size:0.8rem; color:#a16207; margin-top:4px; }
 
-        /* Running UI */
-        .running-ui { display: none; text-align: center; padding: 10px 0; }
-        .level-badge {
-            background: #6366f1; color: white; padding: 4px 10px;
-            border-radius: 12px; font-size: 0.8rem; font-weight: bold;
-            display: inline-block; margin-bottom: 10px;
+        /* ===== WORD PREVIEW ===== */
+        .preview-section { margin-top: 10px; }
+        .preview-label { font-size:0.8rem; font-weight:700; color:var(--primary-dark); margin-bottom:8px; }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 10px; max-height: 300px; overflow-y:auto;
         }
-
-        .big-word-display {
-            font-size: 3.5rem; font-weight: 800; color: var(--text);
-            margin: 15px 0; min-height: 80px; font-family: "KaiTi", "楷体", serif;
+        .preview-item {
+            background: white; border:1px solid var(--border);
+            border-radius: 10px; padding: 14px 4px; text-align:center;
         }
+        .preview-item .word {
+            font-size: 2.2rem; font-weight: bold; color: var(--text);
+            font-family: "KaiTi", "楷体", "STKaiti", serif;
+            line-height: 1.2;
+        }
+        .preview-item .num { font-size:0.65rem; color:#aaa; display:block; margin-bottom:2px; }
 
-        .progress-container {
-            height: 12px; background: #e2e8f0; border-radius: 10px;
-            overflow: hidden; margin: 15px 0;
+        /* ===== SCREEN 3: DICTATION RUNNING ===== */
+        #screen-running { max-width: 480px; margin: 0 auto; }
+        .run-header { text-align:center; margin-bottom:12px; }
+        .run-unit-badge {
+            background: var(--primary-light); color: var(--primary-dark);
+            border-radius:20px; padding:5px 14px; font-size:0.8rem; font-weight:700;
+            display:inline-block;
+        }
+        .progress-wrap { margin:10px 0; }
+        .progress-bar {
+            height: 10px; background:#e0e7ff; border-radius:10px; overflow:hidden;
         }
         .progress-fill {
-            height: 100%; background: linear-gradient(90deg, #818cf8, #6366f1);
-            width: 0%; transition: width 0.3s ease-out;
+            height:100%;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            width:0%; transition:width 0.3s ease-out;
+            border-radius:10px;
+        }
+        .progress-text { text-align:right; font-size:0.75rem; color:var(--sub); margin-top:3px; }
+        .word-stage {
+            text-align:center; padding: 20px 10px;
+        }
+        .word-ordinal {
+            font-size: 0.85rem; color: var(--sub); margin-bottom:8px;
+        }
+        .big-word {
+            font-size: 3.2rem; font-weight: 900; color: var(--text);
+            min-height: 80px; line-height: 1.2;
+            font-family: "KaiTi", "楷体", "STKaiti", serif;
+        }
+        .status-msg { color:var(--sub); font-size:0.9rem; margin-top:8px; min-height:24px; }
+        .countdown-ring {
+            width:54px; height:54px; margin:10px auto;
+        }
+        .countdown-ring svg { width:54px; height:54px; transform:rotate(-90deg); }
+        .countdown-ring circle { fill:none; stroke:#e0e7ff; stroke-width:5; }
+        .countdown-ring .arc { stroke:#6366f1; stroke-linecap:round; transition:stroke-dashoffset 0.1s linear; }
+        .countdown-num {
+            position:relative; top:-42px; text-align:center;
+            font-size:1.1rem; font-weight:900; color:var(--primary-dark);
+        }
+        .run-btns { display:flex; gap:10px; margin-top:6px; }
+        .run-btn {
+            flex:1; padding:11px; border-radius:12px; border:none;
+            font-weight:700; font-size:0.9rem; cursor:pointer;
+        }
+        .run-btn-pause { background:#e0e7ff; color:#4338ca; }
+        .run-btn-stop  { background:#fee2e2; color:#b91c1c; }
+
+        /* ===== SCREEN 4: RESULT ===== */
+        #screen-result { max-width: 480px; margin: 0 auto; }
+        .result-hero { text-align:center; padding:16px 0 10px; }
+        .result-star { font-size:3rem; }
+        .result-title { font-size:1.3rem; font-weight:900; margin-top:6px; color:var(--primary-dark); }
+        .result-score { font-size:2.2rem; font-weight:900; color:var(--success); margin:6px 0; }
+        .result-streak { font-size:0.9rem; color:var(--sub); }
+        .result-encourage {
+            background: linear-gradient(135deg,#e0e7ff,#dbeafe);
+            border-radius:12px; padding:12px 16px; margin:12px 0;
+            font-weight:700; color:#3730a3; text-align:center; font-size:0.95rem;
+        }
+        .answer-check-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px,1fr));
+            gap: 8px; margin-top:10px;
+        }
+        .answer-check-item {
+            background: white; border:2px solid #e0e7ff;
+            border-radius: 10px; padding: 14px 4px;
+            text-align:center; position:relative;
+        }
+        .answer-check-item .word {
+            font-size: 2.2rem; font-weight: bold; color: var(--text);
+            font-family: "KaiTi", "楷体", "STKaiti", serif;
+            line-height: 1.2;
+        }
+        .answer-check-item .num { font-size:0.65rem; color:#aaa; display:block; margin-bottom:2px; }
+        .answer-check-item.wrong { border-color:#fca5a5; background:#fff1f2; }
+        .answer-check-item.wrong .word { color:#b91c1c; }
+        .check-box {
+            position: absolute; top:4px; right:4px;
+            width:20px; height:20px; border-radius:5px;
+            border:2px solid #d1d5db; background:white; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; font-size:0.7rem;
+        }
+        .check-box.checked { background:#fee2e2; border-color:#fca5a5; color:#b91c1c; }
+        .result-summary {
+            display:flex; gap:10px; justify-content:center; margin:12px 0;
+        }
+        .summary-chip {
+            padding:8px 16px; border-radius:20px; font-weight:700; font-size:0.85rem;
         }
 
-        .control-btns { display: flex; justify-content: center; gap: 15px; margin-top: 25px;}
-        .control-btn {
-            padding: 10px 20px; border-radius: 10px; border: none;
-            font-weight: bold; font-size: 0.95rem;
+        /* ===== SCREEN 5: MASTERED / ERROR BOOK ===== */
+        #screen-mastered, #screen-errors { max-width: 480px; margin: 0 auto; }
+        .word-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+            gap:8px; margin-top:10px;
         }
-        .btn-pause { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
-        .btn-stop { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .word-card {
+            background:white; border:1px solid var(--border); border-radius:10px;
+            padding:10px 4px; text-align:center;
+        }
+        .word-card .w {
+            font-size:1.6rem; font-weight:800; color:var(--text);
+            font-family: "KaiTi", "楷体", "STKaiti", serif;
+        }
+        .word-card .cnt { font-size:0.7rem; color:var(--sub); margin-top:3px; }
+        .empty-tip { text-align:center; color:var(--sub); padding:30px; font-size:0.9rem; }
 
-        .answer-list {
-            margin-top: 20px; text-align: left; background: #eef2ff;
-            padding: 15px; border-radius: 12px; display: none; border: 2px solid #c7d2fe;
-        }
-        .answer-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;
-        }
-        .answer-item {
-            background: white; padding: 10px 2px; border-radius: 8px;
-            text-align: center; font-size: 2rem; font-weight: bold;
-            color: #4338ca; border-bottom: 2px solid #c7d2fe;
-        }
-
-        .expand-toggle { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 15px; padding: 10px;}
-        #customInputArea { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;}
-        textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; }
-
-        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .ios-tip { font-size: 0.75rem; color: #ef4444; background: #fee2e2; padding: 8px; border-radius: 8px; margin-bottom: 10px; text-align: left; display: none;}
+        /* ===== ANIMATIONS ===== */
+        @keyframes popIn  { 0%{transform:scale(0.85);opacity:0} 100%{transform:scale(1);opacity:1} }
+        @keyframes shake  { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .pop-in  { animation: popIn  0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .bounce  { animation: bounce 0.6s ease both; }
+        .shake   { animation: shake  0.4s ease both; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="header-badge">📘 五年级下册 📘</div>
-        <h1>词语大闯关</h1>
-    </header>
-    
+<!-- ==================== SCREEN 1: LOGIN ==================== -->
+<div id="screen-login" class="screen active">
+    <div class="login-hero">
+        <span class="emoji">📖</span>
+        <h1>语文词语闯关</h1>
+        <p>每天坚持，成为词语大师！</p>
+    </div>
+
     <div id="iosTip" class="ios-tip">
-        📱 <b>iPhone用户提示：</b>请拨开侧边静音键，并调大媒体音量。
+        📱 <b>iPhone用户：</b>请关闭侧边静音键，调大媒体音量再开始。
     </div>
 
-    <div class="motivation-box" id="motivationBox">
-        积少成多，每一步都算数！
+    <div class="card">
+        <!-- 已有账号快捷列表 -->
+        <div id="existing-users-box" class="user-list" style="display:none">
+            <div class="user-list-title">本设备已有账号，点击直接进入：</div>
+            <div id="user-chips"></div>
+            <div class="divider"></div>
+        </div>
+
+        <!-- 学号输入 -->
+        <div>
+            <label>输入学号 ID</label>
+            <input type="text" id="login-id" placeholder="例如：S001" maxlength="20"
+                   onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div style="font-size:0.78rem;color:var(--sub);margin:6px 0 14px;">
+            首次输入学号会自动创建账号，数据保存在本设备。
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()">🎮 进入闯关</button>
+
+        <div id="login-error" style="color:#dc2626;font-size:0.85rem;margin-top:10px;text-align:center;display:none;"></div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 2: HOME ==================== -->
+<div id="screen-home" class="screen">
+    <!-- TopBar: 3 stats -->
+    <div class="home-topbar">
+        <div class="stat-chip stat-streak" onclick="void(0)">
+            <div class="num" id="stat-streak">0</div>
+            <div class="lbl">🔥 坚持天数</div>
+        </div>
+        <div class="stat-chip stat-mastered" onclick="openScreen('screen-mastered')">
+            <div class="num" id="stat-mastered">0</div>
+            <div class="lbl">⭐ 已掌握词</div>
+        </div>
+        <div class="stat-chip stat-error" onclick="openScreen('screen-errors')">
+            <div class="num" id="stat-error">0</div>
+            <div class="lbl">📝 错题本</div>
+        </div>
     </div>
 
-    <div id="setupArea" class="setup-panel">
-        <label style="display:block; margin-bottom:5px; font-weight:bold; color:#4338ca; font-size:0.9rem;">📚 选择课文：</label>
-        <select id="lessonSelect" class="lesson-select" onchange="previewWords()"></select>
+    <!-- Greeting -->
+    <div class="greeting-bar">
+        <div>
+            <div class="greeting-name" id="greeting-name">Hi！</div>
+            <div class="greeting-sub" id="greeting-sub">今天也要加油哦！</div>
+        </div>
+        <button class="switch-user-btn" onclick="openScreen('screen-login')">切换账号</button>
+    </div>
 
+    <!-- Review Quick Entry (醒目入口，有错词才显示) -->
+    <button class="review-quick-btn" id="review-quick-btn" onclick="startReviewDictation()">
+        <span class="rqb-left">🔥 练习错词</span>
+        <span class="rqb-count" id="review-quick-count">0个待练</span>
+    </button>
+
+    <!-- Review Alert -->
+    <div id="review-alert" class="review-alert">
+        <div class="review-alert-title">🎯 复习时间到！你有不少错误词语等待复习</div>
+        <div class="review-alert-sub">错误词语超过10个，建议先复习一下再继续新单元！</div>
+        <button class="btn btn-accent" style="margin-top:10px;" onclick="startReviewDictation()">🔁 去复习错词</button>
+    </div>
+
+    <div class="card">
+        <!-- Selector -->
+        <div class="selector-row">
+            <select id="sel-grade" onchange="onGradeChange()"></select>
+            <select id="sel-unit"  onchange="onUnitChange()"></select>
+        </div>
+
+        <!-- Settings -->
         <div class="settings-row">
             <div class="setting-group">
                 <label>🗣️ 语速</label>
-                <select id="speechRate">
+                <select id="set-rate">
                     <option value="1">正常</option>
-                    <option value="0.8">稍慢</option>
-                    <option value="0.6" selected>较慢</option>
+                    <option value="0.8" selected>稍慢</option>
+                    <option value="0.6">较慢</option>
                     <option value="0.5">很慢</option>
                 </select>
             </div>
             <div class="setting-group">
-                <label>🔁 重复</label>
-                <select id="repeatCount">
+                <label>🔁 次数</label>
+                <select id="set-repeat">
                     <option value="1">1次</option>
                     <option value="2" selected>2次</option>
                     <option value="3">3次</option>
@@ -202,375 +438,735 @@
             </div>
             <div class="setting-group">
                 <label>✍️ 书写</label>
-                <select id="waitTime">
+                <select id="set-wait">
                     <option value="5">5秒</option>
                     <option value="8" selected>8秒</option>
                     <option value="12">12秒</option>
                 </select>
             </div>
+            <div class="setting-group">
+                <label>🔀 顺序</label>
+                <select id="set-order">
+                    <option value="order" selected>顺序</option>
+                    <option value="random">随机</option>
+                </select>
+            </div>
         </div>
 
-        <button class="main-btn" onclick="initDictation()">
-            <span>🚀 开始挑战</span>
-        </button>
+        <button class="btn btn-primary" onclick="startDictation()">🚀 开始听写</button>
 
-        <div id="wordPreview" class="preview-list"></div>
-
-        <div class="expand-toggle" onclick="toggleCustomArea()">+ 自定义 / PDF识别</div>
-        <div id="customInputArea">
-             <textarea id="customWordInput" placeholder="在此粘贴词语..."></textarea>
-             <input type="file" accept="application/pdf" onchange="handlePdfUpload(event)" style="margin-top:8px; width:100%">
-             <div id="ocrStatus" style="font-size:0.8rem; color:green; margin-top:5px;"></div>
+        <!-- Preview -->
+        <div class="preview-section">
+            <div class="divider"></div>
+            <div class="preview-label">📋 本课词语预习</div>
+            <div class="preview-grid" id="preview-grid"></div>
         </div>
-    </div>
-
-    <div id="runningArea" class="running-ui">
-        <span class="level-badge" id="currentLevelName">当前关卡</span>
-        
-        <div class="progress-container">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-text" id="progressText" style="font-size:0.8rem; color:#888;">0 / 0</div>
-
-        <div class="big-word-display" id="wordDisplay">Ready</div>
-        <div style="color: #64748b; font-size: 0.9rem;" id="statusMsg">点击开始</div>
-
-        <div class="control-btns">
-            <button class="control-btn btn-pause" id="pauseBtn" onclick="togglePause()">暂停</button>
-            <button class="control-btn btn-stop" onclick="stopDictation()">结束</button>
-        </div>
-
-        <div class="answer-list" id="answerList"></div>
     </div>
 </div>
 
+<!-- ==================== SCREEN 3: RUNNING ==================== -->
+<div id="screen-running" class="screen">
+    <div class="card">
+        <div class="run-header">
+            <span class="run-unit-badge" id="run-unit-name">课文</span>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="run-progress-fill"></div></div>
+            <div class="progress-text" id="run-progress-text">0 / 0</div>
+        </div>
+        <div class="word-stage">
+            <div class="word-ordinal" id="run-ordinal">第 1 个</div>
+            <div class="big-word" id="run-word">Ready</div>
+            <div class="status-msg" id="run-status">准备中...</div>
+
+            <div class="countdown-ring" id="countdown-wrap" style="display:none">
+                <svg viewBox="0 0 54 54">
+                    <circle cx="27" cy="27" r="22"/>
+                    <circle class="arc" id="countdown-arc" cx="27" cy="27" r="22"
+                        stroke-dasharray="138.2" stroke-dashoffset="0"/>
+                </svg>
+                <div class="countdown-num" id="countdown-num">8</div>
+            </div>
+        </div>
+        <div class="run-btns">
+            <button class="run-btn run-btn-pause" id="pause-btn" onclick="togglePause()">⏸ 暂停</button>
+            <button class="run-btn run-btn-stop"  onclick="stopDictation()">⏹ 结束</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 4: RESULT ==================== -->
+<div id="screen-result" class="screen">
+    <div class="card">
+        <div class="result-hero">
+            <div class="result-star" id="result-star">🌟</div>
+            <div class="result-title" id="result-title">听写完成！</div>
+            <div class="result-score" id="result-score">0分</div>
+            <div class="result-streak" id="result-streak"></div>
+        </div>
+        <div class="result-encourage" id="result-encourage">加油！继续坚持！</div>
+
+        <div class="result-summary">
+            <span class="summary-chip badge-green" id="sum-correct">✅ 0 个全对</span>
+            <span class="summary-chip badge-red"   id="sum-wrong">❌ 0 个错误</span>
+        </div>
+
+        <div class="divider"></div>
+        <div style="font-weight:700;color:#4338ca;font-size:0.85rem;margin-bottom:6px;">📋 核对答案（点击打错）</div>
+        <div class="answer-check-grid" id="answer-check-grid"></div>
+
+        <div style="height:16px"></div>
+        <button class="btn btn-primary" onclick="submitResult()">✅ 提交结果</button>
+        <div style="height:10px"></div>
+        <button class="btn" style="background:#f0f0f8;color:#4338ca;padding:12px;width:100%;font-size:0.95rem;font-weight:700;" onclick="openScreen('screen-home')">🏠 返回主页</button>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 5a: MASTERED ==================== -->
+<div id="screen-mastered" class="screen">
+    <div class="card">
+        <div class="page-header">
+            <div class="page-title">⭐ 已掌握词语</div>
+            <button class="back-btn" onclick="openScreen('screen-home')">返回</button>
+        </div>
+        <div id="mastered-content"></div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 5b: ERRORS ==================== -->
+<div id="screen-errors" class="screen">
+    <div class="card">
+        <div class="page-header">
+            <div class="page-title">📝 错题本</div>
+            <button class="back-btn" onclick="openScreen('screen-home')">返回</button>
+        </div>
+        <div id="errors-content"></div>
+        <div style="height:12px"></div>
+        <button class="btn btn-accent" id="error-review-btn" onclick="startReviewDictation()" style="display:none;">
+            🔁 开始复习错词
+        </button>
+    </div>
+</div>
+
+<!-- ==================== DATA ==================== -->
 <script>
-    const lessonGroups = [
-        { name: "第1-2课：古诗与园子", words: ["白昼", "昼夜", "耕耘", "耘田", "桑树", "桑叶", "拂晓", "家喻户晓", "蝴蝶", "蝴蝶结", "飞蝶", "粉蝶", "嗡嗡响", "嗡动", "樱花", "樱桃", "榆树", "榆钱", "挺拔", "拔河", "瞎说", "瞎闹", "铲除", "铁铲", "锄草", "锄头", "收割", "分割", "尾巴", "结尾", "承认", "继承", "拴住", "拴马", "水瓢", "瓢泼大雨", "闲逛", "逛街", "蜻蜓", "蚂蚱", "圆滚滚", "明晃晃", "随意"] },
-        { name: "第5课：草船借箭", words: ["妒忌", "嫉妒", "忌讳", "顾忌", "曹操", "监督", "都督", "委托", "委婉", "鲁国", "粗鲁", "遮挡", "遮掩", "迟疑", "疑问", "困惑", "诱惑", "山寨", "水寨", "擂鼓", "擂台", "呐喊", "唢呐", "插嘴", "插秧", "照办", "预计", "紧急", "军令状", "探听", "私自", "布置", "调度", "神机妙算"] },
-        { name: "第6-9课：景阳冈与古诗", words: ["山冈", "井冈山", "饥饿", "饥荒", "碟子", "飞碟", "公斤", "斤斤计较", "俺们", "榜样", "榜文", "拐杖", "手杖", "申请", "重申", "兼职", "软硬兼施", "切勿", "请勿", "拖延", "拖拉", "熟悉", "获悉", "下坠", "坠落", "胸膛", "枪膛", "截断", "截止", "半夜三更", "寻思", "耻笑", "武艺", "篱笆", "樊篱", "仍然", "仍旧", "五岳", "岳飞", "摩擦", "按摩", "遗憾", "遗留", "传递", "快递", "巫婆", "巫术"] },
-        { name: "第10课：青山处处埋忠骨", words: ["彭德怀", "拟定", "模拟", "计谋", "参谋", "瑞雪", "祥瑞", "损失", "损耗", "锻炼", "锻造", "磨炼", "提炼", "眷恋", "家眷", "奔赴", "赴约", "搞好", "搞定", "特殊", "殊荣", "尊重", "尊严", "签名", "签订", "革命", "改革", "情不自禁", "慰问", "繁忙", "下意识"] },
-        { name: "第11课：军神", words: ["庆祝", "国庆", "诊断", "门诊", "肥沃", "沃土", "年龄", "工龄", "土匪", "匪徒", "绷带", "紧绷", "审查", "审视", "药剂", "调味剂", "施工", "施展", "吭声", "引吭高歌", "崭新", "崭露头角", "由衷", "苦衷", "慈祥", "仁慈", "吉祥", "安详", "诊所", "熟练", "一针见血", "施行", "清醒", "颤抖", "一声不吭", "苍白", "肃然起敬", "荣幸"] },
-        { name: "第13课：人物描写一组", words: ["摔跤", "跌跤", "搂抱", "搂住", "打仗", "依仗", "鞭策", "鞭炮", "欺负", "欺骗", "阻挠", "挠头", "扳手", "扳动", "手腕", "腕力", "剃头", "剃须", "腮帮", "两腮", "伤疤", "结疤", "监视", "监狱", "侄子", "侄女", "喉咙", "喉舌", "手疾眼快", "脚腕子", "挺脱", "肢体", "格局", "威严"] },
-        { name: "第14-15课：刷子李与矛盾", words: ["泥浆", "豆浆", "师傅", "太傅", "包袱", "故障", "屏障", "芝麻", "灵芝", "神圣", "圣人", "犯错", "侵犯", "露馅", "肉馅", "轰炸", "轰动", "难堪", "不堪设想", "诈骗", "兵不厌诈", "傻瓜", "装傻", "捏造", "捏泥人", "发怔", "怔住", "粉刷", "绝活", "派头", "手法", "鼓点", "衔接", "矛盾", "长矛", "后盾", "盾牌", "荣誉", "名誉", "吾辈", "支吾"] },
-        { name: "第16-17课：赛马与跳水", words: ["输赢", "赢家", "拳头", "拳击", "擦拭", "策略", "策划", "推荐", "举荐", "赏识", "脚力", "胸有成竹", "摩拳擦掌", "跃跃欲试", "兴致勃勃", "出谋划策", "引荐", "一艘船", "航空", "航行", "放肆", "肆虐", "帽子", "草帽", "桅杆", "撕破", "撕裂", "逗笑", "逗留", "吓唬", "唬人", "鱼钩", "挂钩", "扭打", "扭伤", "咧嘴", "大大咧咧", "船舱", "机舱", "海鸥", "喵喵叫", "风平浪静", "取乐", "哭笑不得", "眼巴巴", "瞄准", "心惊胆战"] },
-        { name: "第18-19课：威尼斯与牧场", words: ["尼姑", "尼龙", "斯文", "瓦斯", "游艇", "潜水艇", "纵横", "纵身", "船艄", "翘起", "翘首", "垫子", "床垫", "保姆", "祷告", "祈祷", "雇佣", "解雇", "簇拥", "花团锦簇", "哗然", "喧哗", "号码", "码头", "操纵", "手忙脚乱", "沉寂", "停泊", "笼罩", "端庄", "仪态", "远眺", "眺望", "骏马", "英俊", "奔驰", "松弛", "辽阔", "辽远", "绵羊", "绵延", "板凳", "凳子", "吆喝", "铃声", "铃铛", "罐头", "瓦罐", "恢复", "天网恢恢", "踢球", "踢踏", "牺牲", "畜牲", "牲畜", "家畜", "遮掩", "阻挡", "飞驰", "赞许", "沉睡", "灯塔"] },
-        { name: "第21-22课：杨氏与手指", words: ["栋梁", "桥梁", "聪明", "聪慧", "造诣", "苦心孤诣", "家禽", "飞禽", "拇指", "大拇指", "搔痒", "搔头", "发痒", "挠痒痒", "污秽", "秽物", "轧钢", "轧路机", "拧开", "拧干", "螺丝", "海螺", "纽扣", "枢纽", "扣子", "折扣", "礼貌", "相貌", "仓库", "仓促", "渺小", "渺茫", "享受", "分享", "平庸", "庸俗", "憎恨", "爱憎分明", "接触", "养尊处优", "享乐", "附庸", "团结"] }
-    ];
-
-    const quotes = {
-        start: ["积少成多，每一步都算数！", "深呼吸，相信自己！", "专注是你最强大的武器。", "今天的努力，是为了明天更棒的自己！"],
-        half: ["太棒了！已经过半了！", "坚持住，你就是最靓的仔！", "加油，胜利就在前方！"],
-        end: ["挑战成功！你又进步了！", "完美通关！给自己鼓个掌！"]
-    };
-
-    // --- 全局变量 ---
-    let currentSessionList = [];
-    let currentIndex = 0;
-    let isRunning = false;
-    let isPaused = false;
-    let synth = window.speechSynthesis;
-    
-    // 🔥 iOS 关键修复：定义全局 utterance 变量，防止被垃圾回收
-    let currentUtterance = null;
-    let chineseVoice = null;
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    // --- 初始化 ---
-    window.onload = function() {
-        initLessonSelector();
-        updateMotivation(quotes.start[Math.floor(Math.random()*quotes.start.length)]);
-        
-        // 检测 iOS 并显示提示
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-            document.getElementById('iosTip').style.display = 'block';
-        }
-
-        // 尝试预加载语音
-        loadVoices();
-        if (synth.onvoiceschanged !== undefined) {
-            synth.onvoiceschanged = loadVoices;
-        }
+window.onerror = function(msg, src, line) {
+    console.error('JS Error line ' + line + ': ' + msg);
+};
+// ===================================================================
+// 教材词语数据（人教版五年级下册）
+// ===================================================================
+const TEXTBOOK_DATA = {
+    "人教版5年级下": {
+        gradeLabel: "5年级下 (人教版)",
+        units: [
+            {
+                name: "第1-2课：古诗与园子",
+                words: ["白昼","昼夜","耕耘","耘田","桑树","桑叶","拂晓","家喻户晓","蝴蝶","蝴蝶结","樱花","樱桃","榆树","榆钱","挺拔","拔河","铲除","铁铲","锄草","锄头","收割","分割","尾巴","结尾","承认","继承","拴住","拴马","水瓢","瓢泼大雨","闲逛","逛街","蜻蜓","蚂蚱","圆滚滚","明晃晃","随意"]
+            },
+            {
+                name: "第5课：草船借箭",
+                words: ["妒忌","嫉妒","忌讳","顾忌","监督","都督","委托","委婉","粗鲁","遮挡","遮掩","迟疑","疑问","困惑","山寨","水寨","擂鼓","擂台","呐喊","插嘴","照办","预计","紧急","军令状","探听","私自","布置","调度","神机妙算"]
+            },
+            {
+                name: "第6-9课：景阳冈与古诗",
+                words: ["山冈","饥饿","饥荒","公斤","拐杖","手杖","申请","重申","切勿","请勿","拖延","拖拉","下坠","坠落","胸膛","枪膛","截断","截止","半夜三更","寻思","耻笑","武艺","篱笆","仍然","仍旧","五岳","摩擦","遗憾","遗留","传递","快递"]
+            },
+            {
+                name: "第10课：青山处处埋忠骨",
+                words: ["拟定","模拟","计谋","参谋","损失","损耗","锻炼","锻造","磨炼","提炼","眷恋","家眷","奔赴","赴约","特殊","殊荣","尊重","尊严","签名","签订","情不自禁","慰问","繁忙","下意识"]
+            },
+            {
+                name: "第11课：军神",
+                words: ["庆祝","国庆","诊断","门诊","肥沃","沃土","年龄","工龄","土匪","匪徒","绷带","紧绷","审查","审视","施工","施展","崭新","崭露头角","由衷","苦衷","慈祥","仁慈","吉祥","安详","诊所","熟练","一针见血","清醒","颤抖","一声不吭","苍白","肃然起敬","荣幸"]
+            },
+            {
+                name: "第13课：人物描写一组",
+                words: ["摔跤","跌跤","搂抱","搂住","打仗","依仗","鞭策","鞭炮","欺负","欺骗","阻挠","挠头","扳手","扳动","手腕","腕力","剃头","剃须","腮帮","两腮","伤疤","结疤","监视","监狱","侄子","侄女","喉咙","喉舌","手疾眼快","挺脱","肢体","格局","威严"]
+            },
+            {
+                name: "第14-15课：刷子李与矛盾",
+                words: ["泥浆","豆浆","师傅","太傅","包袱","屏障","芝麻","灵芝","神圣","圣人","犯错","侵犯","露馅","肉馅","轰炸","轰动","难堪","不堪设想","傻瓜","装傻","捏造","捏泥人","发怔","粉刷","绝活","派头","手法","鼓点","衔接","矛盾","长矛","后盾","盾牌","荣誉","名誉"]
+            },
+            {
+                name: "第16-17课：赛马与跳水",
+                words: ["输赢","赢家","拳头","拳击","策略","策划","推荐","举荐","赏识","脚力","胸有成竹","摩拳擦掌","跃跃欲试","兴致勃勃","出谋划策","一艘船","航空","航行","放肆","肆虐","帽子","草帽","桅杆","撕破","撕裂","逗笑","逗留","吓唬","鱼钩","挂钩","扭打","扭伤","咧嘴","大大咧咧","船舱","机舱","海鸥","风平浪静","取乐","哭笑不得","眼巴巴","瞄准","心惊胆战"]
+            },
+            {
+                name: "第18-19课：威尼斯与牧场",
+                words: ["游艇","潜水艇","纵横","纵身","垫子","床垫","保姆","祷告","祈祷","雇佣","解雇","簇拥","花团锦簇","哗然","喧哗","操纵","手忙脚乱","沉寂","停泊","笼罩","端庄","远眺","眺望","骏马","英俊","奔驰","松弛","辽阔","辽远","绵羊","绵延","吆喝","铃声","铃铛","罐头","恢复","天网恢恢","踢球","踢踏","牺牲","遮掩","阻挡","飞驰","赞许","沉睡","灯塔"]
+            },
+            {
+                name: "第21-22课：杨氏与手指",
+                words: ["栋梁","桥梁","聪明","聪慧","造诣","家禽","飞禽","拇指","大拇指","搔痒","发痒","挠痒痒","污秽","秽物","螺丝","海螺","纽扣","枢纽","扣子","折扣","礼貌","相貌","仓库","仓促","渺小","渺茫","享受","分享","平庸","庸俗","憎恨","爱憎分明","接触","养尊处优","享乐","团结"]
+            }
+        ]
     }
+};
 
-    function loadVoices() {
+// ===================================================================
+// 状态管理
+// ===================================================================
+let currentUser = null;
+let userData = {};
+
+let sessionWords = [];
+let sessionIndex = 0;
+let isRunning = false;
+let isPaused = false;
+let isReviewMode = false;
+let wrongInSession = [];
+let sessionUnitKey = "";
+
+const synth = window.speechSynthesis || null;
+let currentUtterance = null;
+let cnVoice = null;
+
+// ===================================================================
+// 语音初始化（普通话）
+// ===================================================================
+function loadVoices() {
+    if (!synth) return;
+    try {
         const voices = synth.getVoices();
-        // 优先找中文语音
-        chineseVoice = voices.find(v => v.lang === 'zh-CN' || v.lang === 'zh-HK' || v.name.includes('Ting'));
+        cnVoice =
+            voices.find(v => v.lang === 'zh-CN' && v.name.includes('Google')) ||
+            voices.find(v => v.lang === 'zh-CN' && v.name.includes('Ting')) ||
+            voices.find(v => v.lang === 'zh-CN') ||
+            voices.find(v => v.lang === 'zh-HK') ||
+            voices.find(v => v.lang.startsWith('zh'));
+    } catch(e) {}
+}
+try { loadVoices(); } catch(e) {}
+try { if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices; } catch(e) {}
+
+// ===================================================================
+// 数据持久化
+// ===================================================================
+function saveData() {
+    try { localStorage.setItem('cn_userData', JSON.stringify(userData)); } catch(e) {}
+}
+function loadAllData() {
+    try {
+        userData = JSON.parse(localStorage.getItem('cn_userData') || '{}');
+    } catch(e) { userData = {}; }
+}
+function ensureUser(uid) {
+    if (!userData[uid]) {
+        userData[uid] = {
+            name: uid,
+            joinDate: todayStr(),
+            lastDictDate: '',
+            streak: 0,
+            masteredWords: {},
+            errorWords: {},
+            sessionHistory: []
+        };
+    }
+    return userData[uid];
+}
+function getUserData() {
+    return ensureUser(currentUser.id);
+}
+
+// ===================================================================
+// 工具函数
+// ===================================================================
+function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function openScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    if (id === 'screen-login') {
+        document.getElementById('login-id').value = '';
+        document.getElementById('login-error').style.display = 'none';
+        initLoginScreen();
+    }
+    if (id === 'screen-home')     renderHome();
+    if (id === 'screen-mastered') renderMastered();
+    if (id === 'screen-errors')   renderErrors();
+}
+
+// ===================================================================
+// SCREEN 1: 登录
+// ===================================================================
+function initLoginScreen() {
+    loadAllData();
+    const chips = document.getElementById('user-chips');
+    const box   = document.getElementById('existing-users-box');
+    const users = Object.entries(userData).filter(([k]) => k !== '__meta');
+    if (users.length > 0) {
+        box.style.display = 'block';
+        chips.innerHTML = users.map(([id, u]) =>
+            `<span class="user-chip" onclick="quickLogin('${id}')">👤 ${u.name || id}</span>`
+        ).join('');
+    } else {
+        box.style.display = 'none';
+    }
+}
+function showLoginError(msg) {
+    const el = document.getElementById('login-error');
+    el.textContent = msg; el.style.display = 'block';
+}
+function quickLogin(uid) {
+    const u = userData[uid];
+    if (!u) return;
+    currentUser = { id: uid, name: u.name || uid };
+    afterLogin();
+}
+function doLogin() {
+    try {
+        var id = document.getElementById('login-id').value.trim().toUpperCase();
+        if (!id) { showLoginError('请输入学号'); return; }
+        try { userData = JSON.parse(localStorage.getItem('cn_userData') || '{}'); } catch(e) { userData = {}; }
+        if (!userData[id]) {
+            userData[id] = {
+                name: id, joinDate: todayStr(), lastDictDate: '', streak: 0,
+                masteredWords: {}, errorWords: {}, sessionHistory: []
+            };
+            try { localStorage.setItem('cn_userData', JSON.stringify(userData)); } catch(e) {}
+        }
+        currentUser = { id: id, name: userData[id].name || id };
+        document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+        document.getElementById('screen-home').classList.add('active');
+        window.scrollTo(0,0);
+        renderHome();
+    } catch(err) {
+        document.getElementById('login-error').textContent = '出错了：' + err.message;
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+function afterLogin() {
+    saveData();
+    openScreen('screen-home');
+}
+
+// ===================================================================
+// SCREEN 2: HOME
+// ===================================================================
+function renderHome() {
+    const ud = getUserData();
+
+    const masteredCount = Object.values(ud.masteredWords).filter(v => v.mastered).length;
+    const errorCount    = Object.keys(ud.errorWords).length;
+    document.getElementById('stat-streak').textContent   = ud.streak;
+    document.getElementById('stat-mastered').textContent = masteredCount;
+    document.getElementById('stat-error').textContent    = errorCount;
+    document.getElementById('greeting-name').textContent = `Hi，${ud.name || currentUser.name}！👋`;
+    document.getElementById('greeting-sub').textContent  =
+        ud.streak > 1 ? `已坚持 ${ud.streak} 天，继续加油！` : '今天也要加油哦！';
+
+    const reviewAlert = document.getElementById('review-alert');
+    reviewAlert.style.display = errorCount >= 10 ? 'block' : 'none';
+
+    const rqBtn = document.getElementById('review-quick-btn');
+    if (errorCount > 0) {
+        rqBtn.style.display = 'flex';
+        document.getElementById('review-quick-count').textContent = `${errorCount}个待练`;
+    } else {
+        rqBtn.style.display = 'none';
     }
 
-    function initLessonSelector() {
-        const select = document.getElementById('lessonSelect');
-        select.innerHTML = '';
-        lessonGroups.forEach((group, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            const uniqueCount = new Set(group.words).size;
-            option.text = `${group.name} [${uniqueCount}词]`;
-            select.appendChild(option);
-        });
-        if(lessonGroups.length > 0) previewWords();
+    if (document.getElementById('sel-grade').options.length === 0) {
+        initSelectors();
+    } else {
+        updatePreview();
     }
+}
 
-    function previewWords() {
-        const index = document.getElementById('lessonSelect').value;
-        const words = lessonGroups[index].words;
-        const uniqueWords = [...new Set(words)];
-        const list = document.getElementById('wordPreview');
-        let html = '<div class="answer-grid">';
-        uniqueWords.forEach((w, i) => {
-            html += `<div class="answer-item"><span style="font-size:0.7em;color:#aaa;display:block">${i+1}</span>${w}</div>`;
-        });
-        html += '</div>';
-        list.innerHTML = html;
+function updateStreak(ud) {
+    const today = todayStr();
+    if (ud.lastDictDate === today) return;
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+    if (ud.lastDictDate === yStr) {
+        ud.streak = (ud.streak || 0) + 1;
+    } else {
+        ud.streak = 1;
     }
+    ud.lastDictDate = today;
+}
 
-    function toggleCustomArea() {
-        const area = document.getElementById('customInputArea');
-        area.style.display = area.style.display === 'none' ? 'block' : 'none';
+function initSelectors() {
+    const gradeEl = document.getElementById('sel-grade');
+    gradeEl.innerHTML = '';
+    Object.keys(TEXTBOOK_DATA).forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = TEXTBOOK_DATA[key].gradeLabel;
+        gradeEl.appendChild(opt);
+    });
+    onGradeChange();
+}
+function onGradeChange() {
+    const grade  = document.getElementById('sel-grade').value;
+    const unitEl = document.getElementById('sel-unit');
+    unitEl.innerHTML = '';
+    TEXTBOOK_DATA[grade].units.forEach((u, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = u.name;
+        unitEl.appendChild(opt);
+    });
+    updatePreview();
+}
+function onUnitChange() { updatePreview(); }
+function updatePreview() {
+    const grade = document.getElementById('sel-grade').value;
+    const ui    = parseInt(document.getElementById('sel-unit').value);
+    const words = TEXTBOOK_DATA[grade]?.units[ui]?.words || [];
+    const grid  = document.getElementById('preview-grid');
+    grid.innerHTML = words.map((w, i) =>
+        `<div class="preview-item">
+            <span class="num">${i+1}</span>
+            <div class="word">${w}</div>
+        </div>`
+    ).join('');
+}
+
+// ===================================================================
+// SCREEN 3: DICTATION RUNNING
+// ===================================================================
+function unlockAudio() {
+    if (!synth) return;
+    try {
+        const u = new SpeechSynthesisUtterance('');
+        synth.speak(u);
+        synth.cancel();
+    } catch(e) {}
+    if (!cnVoice) {
+        try {
+            const voices = synth.getVoices();
+            cnVoice = voices.find(v => v.lang === 'zh-CN') ||
+                      voices.find(v => v.lang.startsWith('zh')) ||
+                      voices[0] || null;
+        } catch(e) {}
     }
+}
 
-    function updateMotivation(text) {
-        const box = document.getElementById('motivationBox');
-        box.style.opacity = 0;
-        setTimeout(() => { box.innerText = text; box.style.opacity = 1; }, 300);
+function startDictation() {
+    unlockAudio();
+    const grade = document.getElementById('sel-grade').value;
+    const ui    = parseInt(document.getElementById('sel-unit').value);
+    const unit  = TEXTBOOK_DATA[grade].units[ui];
+    const orderMode = document.getElementById('set-order').value;
+
+    isReviewMode = false;
+    let words = [...unit.words];
+    if (orderMode === 'random') {
+        for (let i = words.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [words[i], words[j]] = [words[j], words[i]];
+        }
     }
+    sessionWords = words;
+    sessionUnitKey = `${grade}__${ui}`;
 
-    // --- 听写逻辑 ---
+    document.getElementById('run-unit-name').textContent =
+        unit.name + (orderMode === 'random' ? ' 🔀' : '');
+    openScreen('screen-running');
+    runDictation();
+}
 
-    function initDictation() {
-        // 🔥 iOS 核心修复 1：在用户点击瞬间，必须触发一次 synth.speak
+function startReviewDictation() {
+    unlockAudio();
+    const ud = getUserData();
+    const errWords = Object.keys(ud.errorWords);
+    if (errWords.length === 0) { alert('错题本是空的！'); return; }
+
+    isReviewMode = true;
+    sessionWords = errWords.slice(0, 20);
+    sessionUnitKey = '__review__';
+    document.getElementById('run-unit-name').textContent = '🔁 错词复习';
+    openScreen('screen-running');
+    runDictation();
+}
+
+async function runDictation() {
+    isRunning = true; isPaused = false;
+    sessionIndex = 0;
+    wrongInSession = [];
+
+    const wordEl    = document.getElementById('run-word');
+    const statusEl  = document.getElementById('run-status');
+    const ordinalEl = document.getElementById('run-ordinal');
+    const total = sessionWords.length;
+
+    if (synth) {
         synth.cancel();
         const warmUp = new SpeechSynthesisUtterance('');
         synth.speak(warmUp);
-
-        const customInput = document.getElementById('customWordInput').value.trim();
-        let sessionName = "";
-
-        if (customInput.length > 0) {
-            currentSessionList = processTextToWords(customInput);
-            if(currentSessionList.length === 0) { alert("无效的词语输入"); return; }
-            sessionName = "自定义挑战";
-        } else {
-            const index = document.getElementById('lessonSelect').value;
-            currentSessionList = [...new Set(lessonGroups[index].words)];
-            sessionName = lessonGroups[index].name;
-        }
-
-        document.getElementById('setupArea').style.display = 'none';
-        document.getElementById('runningArea').style.display = 'block';
-        document.getElementById('answerList').style.display = 'none';
-        document.getElementById('answerList').innerHTML = '';
-        document.getElementById('currentLevelName').innerText = sessionName;
-
-        startSession();
     }
 
-    function processTextToWords(text) {
-        const extracted = text.match(/[\u4e00-\u9fa5]+/g);
-        if (!extracted) return [];
-        return [...new Set(extracted.filter(w => w.length >= 1))];
+    statusEl.textContent = '准备开始...';
+    for (let i = 3; i > 0; i--) {
+        wordEl.textContent = i;
+        wordEl.style.fontFamily = '';
+        await sleep(900);
     }
+    wordEl.textContent = '';
 
-    // --- 核心循环 ---
-    async function startSession() {
-        isRunning = true;
-        isPaused = false;
-        currentIndex = 0;
-        document.getElementById('pauseBtn').innerText = '暂停';
-        
-        const display = document.getElementById('wordDisplay');
-        const status = document.getElementById('statusMsg');
-        
-        // 倒计时
-        status.innerText = "准备开始...";
-        for(let i=3; i>0; i--) {
-            display.innerText = i;
-            await sleep(1000);
-        }
+    while (sessionIndex < total && isRunning) {
+        updateRunProgress();
+        await waitWhilePaused();
+        if (!isRunning) break;
 
-        const total = currentSessionList.length;
+        const word = sessionWords[sessionIndex];
+        ordinalEl.textContent = `第 ${sessionIndex + 1} 个 / 共 ${total} 个`;
+        wordEl.style.animation = 'none';
+        wordEl.offsetHeight;
+        wordEl.style.animation = 'popIn 0.35s both';
+        wordEl.textContent = `#${sessionIndex + 1}`;
+        wordEl.style.color = '#6b7280';
+        wordEl.style.fontFamily = '';
 
-        while (currentIndex < total && isRunning) {
-            updateProgress();
-            
-            if (currentIndex === Math.floor(total / 2)) {
-                updateMotivation(quotes.half[Math.floor(Math.random()*quotes.half.length)]);
-            }
+        statusEl.textContent = '🔊 朗读中...';
 
-            await checkPause();
+        const repeat = parseInt(document.getElementById('set-repeat').value);
+        for (let r = 0; r < repeat; r++) {
+            await waitWhilePaused();
             if (!isRunning) break;
-
-            const word = currentSessionList[currentIndex];
-            
-            display.style.animation = 'none';
-            display.offsetHeight; 
-            display.style.animation = 'popIn 0.5s';
-            
-            display.innerText = `第 ${currentIndex + 1} 个`;
-            display.style.color = '#312e81';
-            status.innerText = '正在朗读...';
-
-            const repeat = parseInt(document.getElementById('repeatCount').value);
-            for (let r=0; r < repeat; r++) {
-                await checkPause(); 
-                if (!isRunning) break;
-                
-                await speakWord(word); // 等待朗读完成
-                
-                if (r < repeat - 1) await sleep(1200); 
-            }
-
-            if (!isRunning) break;
-            status.innerText = '请书写...';
-            display.style.color = '#e2e8f0'; 
-            
-            const waitTime = parseInt(document.getElementById('waitTime').value) * 10; 
-            for(let t=0; t<waitTime; t++) { 
-                await checkPause();
-                if (!isRunning) break;
-                await sleep(100);
-            }
-
-            currentIndex++;
+            await speakWord(word);
+            if (r < repeat - 1) await sleep(1000);
         }
 
-        if (isRunning) {
-            finishDictation();
+        if (!isRunning) break;
+
+        wordEl.style.color = '#e0e7ff';
+        statusEl.textContent = '✍️ 书写中...';
+        const waitSec = parseInt(document.getElementById('set-wait').value);
+        await runCountdown(waitSec);
+
+        sessionIndex++;
+    }
+
+    if (isRunning) showResult();
+}
+
+async function runCountdown(seconds) {
+    const wrap     = document.getElementById('countdown-wrap');
+    const arcEl    = document.getElementById('countdown-arc');
+    const numEl    = document.getElementById('countdown-num');
+    const total_ms = seconds * 1000;
+    const R = 22, C = 2 * Math.PI * R;
+
+    wrap.style.display = 'block';
+    arcEl.style.strokeDasharray  = C;
+    arcEl.style.strokeDashoffset = 0;
+
+    const start = Date.now();
+    while (true) {
+        if (!isRunning) break;
+        await waitWhilePaused();
+        const elapsed = Date.now() - start;
+        const remain  = Math.max(0, total_ms - elapsed);
+        const frac    = remain / total_ms;
+        arcEl.style.strokeDashoffset = C * (1 - frac);
+        numEl.textContent = Math.ceil(remain / 1000);
+        if (remain <= 0) break;
+        await sleep(80);
+    }
+    wrap.style.display = 'none';
+}
+
+function updateRunProgress() {
+    const total = sessionWords.length;
+    const pct   = (sessionIndex / total) * 100;
+    document.getElementById('run-progress-fill').style.width = pct + '%';
+    document.getElementById('run-progress-text').textContent = `${sessionIndex} / ${total}`;
+}
+
+async function waitWhilePaused() {
+    while (isPaused && isRunning) await sleep(200);
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    const btn = document.getElementById('pause-btn');
+    if (isPaused) {
+        if (synth) synth.cancel();
+        btn.textContent = '▶ 继续';
+        document.getElementById('run-status').textContent = '⏸ 已暂停';
+    } else {
+        btn.textContent = '⏸ 暂停';
+    }
+}
+function stopDictation() {
+    if (confirm('确定要提前结束吗？')) {
+        isRunning = false;
+        if (synth) synth.cancel();
+        openScreen('screen-home');
+    }
+}
+
+function speakWord(text) {
+    return new Promise(resolve => {
+        if (!synth) { setTimeout(resolve, 800); return; }
+
+        if (!cnVoice) {
+            try {
+                const voices = synth.getVoices();
+                cnVoice = voices.find(v => v.lang === 'zh-CN') ||
+                          voices.find(v => v.lang.startsWith('zh')) ||
+                          voices[0] || null;
+            } catch(e) {}
         }
-    }
 
-    // 🔥 iOS 核心修复 2：语音合成 Promise 封装
-    function speakWord(text) {
-        return new Promise((resolve) => {
-            // 先停止之前的
-            synth.cancel();
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang  = 'zh-CN';
+        u.rate  = parseFloat(document.getElementById('set-rate').value);
+        u.pitch = 1.0;
 
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'zh-CN';
-            
-            if (chineseVoice) {
-                u.voice = chineseVoice;
-            }
+        if (cnVoice) u.voice = cnVoice;
 
-            const selectedRate = document.getElementById('speechRate').value;
-            u.rate = parseFloat(selectedRate);
-            
-            // 🔥 关键：将 utterance 赋值给全局变量
-            currentUtterance = u;
+        currentUtterance = u;
+        u.onend   = () => { currentUtterance = null; resolve(); };
+        u.onerror = () => { currentUtterance = null; resolve(); };
+        synth.speak(u);
 
-            u.onend = () => {
-                currentUtterance = null; 
-                resolve();
-            };
+        const timeout = Math.max(4000, text.length * 800);
+        setTimeout(() => { if (currentUtterance === u) { currentUtterance = null; resolve(); } }, timeout);
+    });
+}
 
-            u.onerror = (e) => {
-                console.error("Speech error", e);
-                currentUtterance = null;
-                resolve();
-            };
+// ===================================================================
+// SCREEN 4: RESULT
+// ===================================================================
+function showResult() {
+    openScreen('screen-result');
+    isRunning = false;
 
-            synth.speak(u);
+    const grid = document.getElementById('answer-check-grid');
+    grid.innerHTML = sessionWords.map((w, i) =>
+        `<div class="answer-check-item" id="aci-${i}">
+            <span class="num">${i+1}</span>
+            <div class="word">${w}</div>
+            <div class="check-box" id="cb-${i}" onclick="toggleWrong(${i})"></div>
+        </div>`
+    ).join('');
 
-            // 🔥 iOS 核心修复 3：超时强制跳过 (4秒)
-            setTimeout(() => {
-                if (currentUtterance === u) {
-                    console.log("iOS timeout fallback");
-                    resolve();
-                }
-            }, 4000); 
-        });
-    }
+    updateResultSummary();
 
-    function updateProgress() {
-        const total = currentSessionList.length;
-        document.getElementById('progressText').innerText = `进度: ${currentIndex} / ${total}`;
-        const pct = ((currentIndex) / total) * 100;
-        document.getElementById('progressFill').style.width = `${pct}%`;
-    }
+    const ud = getUserData();
+    document.getElementById('result-streak').textContent = `🔥 今天是你坚持的第 ${ud.streak} 天`;
+    refreshEncourage(0, sessionWords.length);
+}
 
-    async function checkPause() {
-        while (isPaused && isRunning) {
-            await sleep(200);
+function toggleWrong(idx) {
+    const item = document.getElementById(`aci-${idx}`);
+    const cb   = document.getElementById(`cb-${idx}`);
+    const word = sessionWords[idx];
+    const isNowWrong = !item.classList.contains('wrong');
+    item.classList.toggle('wrong', isNowWrong);
+    cb.classList.toggle('checked', isNowWrong);
+    cb.textContent = isNowWrong ? '✗' : '';
+    if (isNowWrong) { if (!wrongInSession.includes(word)) wrongInSession.push(word); }
+    else { wrongInSession = wrongInSession.filter(w => w !== word); }
+    updateResultSummary();
+}
+
+function updateResultSummary() {
+    const wrong   = wrongInSession.length;
+    const correct = sessionWords.length - wrong;
+    const score   = Math.round((correct / sessionWords.length) * 100);
+    document.getElementById('result-score').textContent = score + '分';
+    document.getElementById('sum-correct').textContent  = `✅ ${correct} 个全对`;
+    document.getElementById('sum-wrong').textContent    = `❌ ${wrong} 个错误`;
+    document.getElementById('result-star').textContent  = score >= 90 ? '🌟' : score >= 70 ? '🎉' : '💪';
+    refreshEncourage(wrong, sessionWords.length);
+}
+
+function refreshEncourage(wrong, total) {
+    const ud = getUserData();
+    let msg = '';
+    if (wrong === 0)              msg = `太棒了！全部正确！你是词语大师！🏆`;
+    else if (wrong <= 2)          msg = `非常好！只错了 ${wrong} 个，继续加油！😊`;
+    else if (wrong <= total*0.3)  msg = `不错哦！已经坚持了 ${ud.streak} 天，为你点赞！⭐`;
+    else                          msg = `没关系，多练几次就记住啦！坚持就是胜利！💪`;
+    document.getElementById('result-encourage').textContent = msg;
+}
+
+function submitResult() {
+    const ud = getUserData();
+
+    wrongInSession.forEach(w => {
+        ud.errorWords[w] = (ud.errorWords[w] || 0) + 1;
+        if (ud.masteredWords[w]) delete ud.masteredWords[w];
+    });
+
+    sessionWords.forEach(w => {
+        if (wrongInSession.includes(w)) return;
+        if (!ud.masteredWords[w]) ud.masteredWords[w] = { correctStreak: 0 };
+        ud.masteredWords[w].correctStreak = (ud.masteredWords[w].correctStreak || 0) + 1;
+        if (ud.masteredWords[w].correctStreak >= 2) {
+            ud.masteredWords[w].mastered = true;
+            delete ud.errorWords[w];
         }
+    });
+
+    updateStreak(ud);
+    saveData();
+    openScreen('screen-home');
+}
+
+// ===================================================================
+// SCREEN 5a: MASTERED
+// ===================================================================
+function renderMastered() {
+    const ud      = getUserData();
+    const mastered = Object.entries(ud.masteredWords).filter(([,v]) => v && v.mastered);
+    const el = document.getElementById('mastered-content');
+    if (mastered.length === 0) {
+        el.innerHTML = '<div class="empty-tip">还没有掌握的词语，加油听写！🌱</div>';
+        return;
     }
+    el.innerHTML = `<div style="color:var(--sub);font-size:0.8rem;margin-bottom:8px;">共掌握 ${mastered.length} 个词语 🎉</div>` +
+        `<div class="word-list-grid">` +
+        mastered.map(([w]) =>
+            `<div class="word-card"><div class="w">${w}</div><div class="cnt">已掌握 ⭐</div></div>`
+        ).join('') +
+        `</div>`;
+}
 
-    function togglePause() {
-        isPaused = !isPaused;
-        const btn = document.getElementById('pauseBtn');
-        if (isPaused) {
-            synth.cancel(); 
-            btn.innerText = '继续';
-            btn.style.background = "#e0e7ff";
-            btn.style.color = "#312e81";
-            document.getElementById('statusMsg').innerText = '⏸ 已暂停';
-        } else {
-            btn.innerText = '暂停';
-            btn.style.background = "#eef2ff";
-            btn.style.color = "#4338ca";
-        }
+// ===================================================================
+// SCREEN 5b: ERRORS
+// ===================================================================
+function renderErrors() {
+    const ud     = getUserData();
+    const errors = Object.entries(ud.errorWords);
+    const el     = document.getElementById('errors-content');
+    const btn    = document.getElementById('error-review-btn');
+
+    if (errors.length === 0) {
+        el.innerHTML = '<div class="empty-tip">错题本是空的，你太厉害了！🌟</div>';
+        btn.style.display = 'none';
+        return;
     }
+    btn.style.display = 'block';
+    el.innerHTML = `<div style="color:var(--sub);font-size:0.8rem;margin-bottom:8px;">共 ${errors.length} 个错词，别忘了复习哦！</div>` +
+        `<div class="word-list-grid">` +
+        errors.sort((a,b) => b[1]-a[1]).map(([w, cnt]) =>
+            `<div class="word-card"><div class="w">${w}</div><div class="cnt">错了 ${cnt} 次</div></div>`
+        ).join('') +
+        `</div>`;
+}
 
-    function stopDictation() {
-        if(confirm("确定要结束吗？")) {
-            isRunning = false;
-            synth.cancel();
-            document.getElementById('runningArea').style.display = 'none';
-            document.getElementById('setupArea').style.display = 'block';
-            updateMotivation("没关系，下次继续！");
-        }
-    }
-
-    function finishDictation() {
-        const display = document.getElementById('wordDisplay');
-        display.innerHTML = '<div style="animation:popIn 0.6s"><span style="font-size:3rem;display:inline-block;animation:float 2s infinite">🌟</span><br>完成!</div>';
-        display.style.fontSize = "2rem";
-        document.getElementById('statusMsg').innerText = "太棒了！快检查一下！";
-        
-        document.getElementById('progressFill').style.width = '100%';
-        document.getElementById('progressText').innerText = "100%";
-        updateMotivation(quotes.end[Math.floor(Math.random()*quotes.end.length)]);
-
-        const list = document.getElementById('answerList');
-        let html = '<h3 style="margin-bottom:15px; color:#4f46e5; text-align:center;">🏆 答案核对卡</h3><div class="answer-grid">';
-        currentSessionList.forEach((w, i) => {
-            html += `<div class="answer-item"><span style="font-size:0.7em;color:#aaa;display:block">${i+1}</span>${w}</div>`;
-        });
-        html += '</div><div style="text-align:center; margin-top:20px;"><button class="control-btn" onclick="location.reload()" style="background:#6366f1;color:white;">再来一局</button></div>';
-        
-        list.innerHTML = html;
-        list.style.display = 'block';
-        document.querySelector('.control-btns').style.display = 'none';
-        
-        setTimeout(() => { list.scrollIntoView({ behavior: 'smooth' }); }, 500);
-    }
-
-    async function handlePdfUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const statusEl = document.getElementById('ocrStatus');
-        statusEl.innerText = '⏳ 正在解析...';
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            let fullText = '';
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                fullText += textContent.items.map(item => item.str).join(' ');
-            }
-            document.getElementById('customWordInput').value = fullText;
-            statusEl.innerText = '✅ 解析成功';
-        } catch (e) {
-            console.error(e);
-            statusEl.innerText = '❌ 解析失败';
-        }
-    }
-
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
+// ===================================================================
+// 页面启动
+// ===================================================================
+(function init() {
+    try {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) document.getElementById('iosTip').style.display = 'block';
+    } catch(e) {}
+    initLoginScreen();
+})();
 </script>
 </body>
 </html>
